@@ -11,52 +11,61 @@ import UIKit
 import SwiftUI
 import SnapKit
 
-class HomeVC: UIViewController {
+class HomeVC: UIViewController, UIScrollViewDelegate {
     
+    // MARK: - Foundation
     private var scrollView: UIScrollView = {
         let s = UIScrollView()
         s.backgroundColor = .clear
-        s.translatesAutoresizingMaskIntoConstraints = false
+        s.showsVerticalScrollIndicator = false
         return s
     }()
     
     private var stack: UIStackView = {
         let s = UIStackView()
-        s.translatesAutoresizingMaskIntoConstraints = false
         s.axis = .vertical
         s.alignment = .leading
         s.spacing = 0
         return s
     }()
     
+    // MARK: - GNB
     private var gnbBar: UIView = {
         let v = UIView()
         v.layer.zPosition = 2
         v.backgroundColor = .gray800
-        v.translatesAutoresizingMaskIntoConstraints = false
+        
+        v.layer.shadowColor = UIColor.black.cgColor
+        v.layer.shadowOpacity = 0.0
+        v.layer.shadowOffset = .init(width: 0, height: 4)
+        v.layer.shadowRadius = 12
         return v
     }()
+    
+    private let gnbHeight: CGFloat = 48
     
     private var logo: UIImageView = {
         if let image = UIImage(named: "Logo") {
             let imageView = UIImageView(image: image)
-            imageView.translatesAutoresizingMaskIntoConstraints = false
             return imageView
         } else {
             fatalError("Logo image is missing")
         }
     }()
     
+    // MARK: properties
+    private var showShadow = false
+    
+    // MARK: - Banner
     private var banner: UIHostingController = {
         let v = UIHostingController(rootView: BannerView())
-        v.view.translatesAutoresizingMaskIntoConstraints = false
         v.view.backgroundColor = .gray800
         return v
     }()
     
+    // MARK: - Title
     private var titleContainer: UIView = {
         let v = UIView()
-        v.translatesAutoresizingMaskIntoConstraints = false
         return v
     }()
     
@@ -68,15 +77,16 @@ class HomeVC: UIViewController {
         return l
     }()
     
+    // MARK: - ForYou
     private var forYouVC = ForYouVC()
     
+    // MARK: - Music
     private var categoryContainer: UIStackView = {
         let s = UIStackView()
         s.axis = .horizontal
         s.alignment = .center
         s.distribution = .fill
         s.spacing = 28
-        s.translatesAutoresizingMaskIntoConstraints = false
         return s
     }()
     
@@ -90,8 +100,58 @@ class HomeVC: UIViewController {
         return stack
     }()
     
+    // MARK: properties
     private var musics: [MusicModel] = MusicModel.stubs
     private var musicCells: [MusicCell] = []
+    
+    
+    // MARK: - player
+    private var player: UIView = {
+        let v = UIView()
+        v.layer.zPosition = 3
+        v.backgroundColor = .gray800
+        v.layer.shadowColor = UIColor.black.cgColor
+        v.layer.shadowOpacity = 0.15
+        v.layer.shadowOffset = .init(width: 0, height: -4)
+        v.layer.shadowRadius = 20
+        v.roundCorners(cornerRadius: 36, byRoundingCorners: [.topLeft, .topRight])
+        return v
+    }()
+    
+    private var playingImage: UIImageView = {
+        let image = UIImageView()
+        let uiImage = UIImage(named: "Logo")
+        image.image = uiImage
+        image.layer.cornerRadius = 18
+        return image
+    }()
+    
+    private var playingTitle: UILabel = {
+        let l = UILabel()
+        l.text = "모든 소원이 이루어지는 주파수"
+        l.font = .systemFont(ofSize: 16, weight: .medium)
+        l.textColor = .white
+        return l
+    }()
+    
+    private var playingAuthor: UILabel = {
+        let l = UILabel()
+        l.text = "Jazz Hot Cafe"
+        l.font = .systemFont(ofSize: 14, weight: .regular)
+        l.textColor = .gray500
+        return l
+    }()
+    
+    private var playButton: UIButton = {
+        let uiImage = UIImage(named: "Play")
+        let button = UIButton()
+        button.setImage(uiImage, for: .normal)
+        return button
+    }()
+    
+    // MARK: properties
+    private let playerHeight: CGFloat = 90
+    
     
     func createCategoryButton(title: String, isSelected: Bool = false) -> UIButton {
         let b = UIButton()
@@ -104,11 +164,31 @@ class HomeVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupScroll()
+        setUpStyle()
+        setUpLayout()
+    }
+    
+    func setupScroll() {
+        scrollView.delegate = self
+        scrollView.addObserver(self, forKeyPath: "contentOffset", options:. new, context: nil)
+    }
+    
+    func setUpStyle() {
+        self.view.backgroundColor = .gray800
+    }
+    
+    func setUpLayout() {
         
         self.view.addSubview(scrollView)
         self.scrollView.addSubview(stack)
         
         self.view.addSubview(gnbBar)
+        self.view.addSubview(player)
+        self.player.addSubview(playingImage)
+        self.player.addSubview(playingTitle)
+        self.player.addSubview(playingAuthor)
+        self.player.addSubview(playButton)
         
         self.gnbBar.addSubview(logo)
         
@@ -135,18 +215,16 @@ class HomeVC: UIViewController {
                 let uiImage = UIImage(named: m.image)
                 let image = UIImageView()
                 image.image = uiImage
-                image.translatesAutoresizingMaskIntoConstraints = false
                 image.layer.cornerRadius = 16
                 return image
             }()
-            let v: UIView = {
-                let v = UIView()
-                v.translatesAutoresizingMaskIntoConstraints = false
+            let v: UIButton = {
+                let v = UIButton()
+                v.addTarget(self, action: #selector(clickMusic), for: .touchUpInside)
                 return v
             }()
             let title: UILabel = {
                 let title = UILabel()
-                title.translatesAutoresizingMaskIntoConstraints = false
                 title.text = m.title
                 title.textColor = .white
                 title.font = .systemFont(ofSize: 16, weight: .medium)
@@ -154,7 +232,6 @@ class HomeVC: UIViewController {
             }()
             let author: UILabel = {
                 let author = UILabel()
-                author.translatesAutoresizingMaskIntoConstraints = false
                 author.text = m.author
                 author.textColor = .gray500
                 author.font = .systemFont(ofSize: 14, weight: .regular)
@@ -167,15 +244,6 @@ class HomeVC: UIViewController {
             musicContainer.addArrangedSubview(m.container)
             musicCells.append(m)
         }
-        setUpStyle()
-        setUpLayout()
-    }
-    
-    func setUpStyle() {
-        self.view.backgroundColor = .gray800
-    }
-    
-    func setUpLayout() {
         
         scrollView.snp.makeConstraints { make in
             make.top.bottom.equalTo(view.layoutMarginsGuide)
@@ -190,12 +258,12 @@ class HomeVC: UIViewController {
         gnbBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalTo(view)
-            make.height.equalTo(48)
+            make.height.equalTo(gnbHeight)
         }
         
         logo.snp.makeConstraints { make in
             make.leading.equalTo(gnbBar).offset(20)
-            make.top.equalTo(gnbBar)
+            make.top.equalTo(view.safeAreaLayoutGuide)
         }
         
         banner.view.snp.makeConstraints { make in
@@ -218,11 +286,12 @@ class HomeVC: UIViewController {
         forYouVC.view.snp.makeConstraints { make in
             make.height.equalTo(202)
             make.top.equalTo(titleContainer.snp.bottom)
+            make.bottom.equalTo(categoryContainer.snp.top).offset(-24)
             make.leading.trailing.equalTo(view)
         }
         
         categoryContainer.snp.makeConstraints { make in
-            make.top.equalTo(forYouVC.view.snp.bottom).offset(16)
+            make.top.equalTo(forYouVC.view.snp.bottom)
             make.leading.equalTo(stack).offset(28)
             make.height.equalTo(48)
         }
@@ -252,5 +321,60 @@ class HomeVC: UIViewController {
                 make.top.equalTo(m.title.snp.bottom).offset(2)
             }
         }
+        
+        player.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalTo(view)
+            make.height.equalTo(playerHeight)
+        }
+        
+        playingImage.snp.makeConstraints { make in
+            make.top.equalTo(player).offset(18)
+            make.leading.equalTo(view).offset(18)
+        }
+        
+        playingTitle.snp.makeConstraints { make in
+            make.top.equalTo(player).offset(22)
+            make.leading.equalTo(playingImage.snp.trailing).offset(16)
+        }
+        
+        playingAuthor.snp.makeConstraints { make in
+            make.top.equalTo(playingTitle.snp.bottom).offset(4)
+            make.leading.equalTo(playingImage.snp.trailing).offset(16)
+        }
+        
+        playButton.snp.makeConstraints { make in
+            make.top.equalTo(player).offset(23)
+            make.trailing.equalTo(view).offset(-18)
+        }
+    }
+    
+    func showGnbShadow() {
+        gnbBar.layer.shadowOpacity = 0.16
+    }
+    
+    func hideGnbShadow() {
+        gnbBar.layer.shadowOpacity = 0.0
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "contentOffset" {
+            let y = scrollView.contentOffset.y
+            if y > gnbHeight && !showShadow {
+                showGnbShadow()
+                showShadow = true
+            } else if y <= gnbHeight && showShadow {
+                hideGnbShadow()
+                showShadow = false
+            }
+        }
+    }
+    
+    @objc func clickMusic() {
+        print("Hello!")
+    }
+    
+    deinit {
+        scrollView.removeObserver(self, forKeyPath: "contentOffset")
     }
 }

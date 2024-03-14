@@ -10,7 +10,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         window = UIWindow()
-        window?.rootViewController = HomeVC()
+        window?.rootViewController = UINavigationController(rootViewController: HomeVC())
         window?.makeKeyAndVisible()
         return true
     }

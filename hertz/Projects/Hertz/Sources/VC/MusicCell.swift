@@ -1,7 +1,7 @@
 import UIKit
 
 struct MusicCell {
-    let container: UIView
+    let container: UIButton
     let image: UIImageView
     let title: UILabel
     let author: UILabel
