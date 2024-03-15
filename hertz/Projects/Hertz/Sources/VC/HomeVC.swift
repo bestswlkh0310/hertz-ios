@@ -35,10 +35,14 @@ class HomeVC: UIViewController, UIScrollViewDelegate {
         v.layer.zPosition = 2
         v.backgroundColor = .gray800
         
+        v.layer.shadowPath = UIBezierPath(roundedRect: v.bounds,
+                                          cornerRadius: v.layer.cornerRadius).cgPath
         v.layer.shadowColor = UIColor.black.cgColor
         v.layer.shadowOpacity = 0.0
         v.layer.shadowOffset = .init(width: 0, height: 4)
         v.layer.shadowRadius = 12
+        
+        
         return v
     }()
     
@@ -110,11 +114,14 @@ class HomeVC: UIViewController, UIScrollViewDelegate {
         let v = UIView()
         v.layer.zPosition = 3
         v.backgroundColor = .gray800
+        
+        v.layer.shadowPath = UIBezierPath(roundedRect: v.bounds,
+                                          cornerRadius: v.layer.cornerRadius).cgPath
+//        v.roundCorners(cornerRadius: 36, byRoundingCorners: [.topLeft, .topRight])
         v.layer.shadowColor = UIColor.black.cgColor
         v.layer.shadowOpacity = 0.15
-        v.layer.shadowOffset = .init(width: 0, height: -4)
-        v.layer.shadowRadius = 20
-        v.roundCorners(cornerRadius: 36, byRoundingCorners: [.topLeft, .topRight])
+        v.layer.shadowOffset = .init(width: 0, height: 4)
+        v.layer.shadowRadius = 12
         return v
     }()
     
@@ -298,7 +305,7 @@ class HomeVC: UIViewController, UIScrollViewDelegate {
         
         musicContainer.snp.makeConstraints { make in
             make.top.equalTo(categoryContainer.snp.bottom)
-            make.leading.equalTo(stack)
+            make.leading.trailing.equalTo(stack)
             make.height.equalTo(musicCells.count * 72)
         }
         
@@ -324,7 +331,7 @@ class HomeVC: UIViewController, UIScrollViewDelegate {
         
         player.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.leading.trailing.equalTo(view)
+            make.leading.trailing.equalTo(musicContainer)
             make.height.equalTo(playerHeight)
         }
         
