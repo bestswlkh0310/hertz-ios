@@ -71,12 +71,22 @@ class HomeVC: BaseVC, UIScrollViewDelegate {
         scrollView.addObserver(self, forKeyPath: "contentOffset", options:. new, context: nil)
     }
     
-    override func setUpStyle() {
-        self.view.backgroundColor = .gray800
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         if let navigationController = self.navigationController {
             navigationController.setNavigationBarHidden(true, animated: false)
         }
-        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let navigationController = self.navigationController {
+            navigationController.setNavigationBarHidden(false, animated: false)
+        }
+    }
+    
+    override func setUpStyle() {
+        self.view.backgroundColor = .gray800
         scrollView = .init().then {
             $0.backgroundColor = .clear
             $0.showsVerticalScrollIndicator = false

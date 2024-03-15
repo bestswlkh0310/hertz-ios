@@ -39,7 +39,6 @@ class DetailVC: BaseVC, UINavigationControllerDelegate {
         navigationController?.delegate = self
         navigationItem.leftBarButtonItem = backButton
         if let navigationController = self.navigationController {
-            navigationController.setNavigationBarHidden(false, animated: true)
             navigationController.interactivePopGestureRecognizer?.delegate = self
         }
     }
