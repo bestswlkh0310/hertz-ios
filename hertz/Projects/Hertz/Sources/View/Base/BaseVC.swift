@@ -1,6 +1,6 @@
 import UIKit
 
-open class BaseVC: UIViewController {
+open class BaseVC: UIViewController, BaseProtocol {
     
     override open func viewDidLoad() {
         super.viewDidLoad()
