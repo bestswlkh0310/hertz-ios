@@ -26,9 +26,9 @@ struct BannerCell: View {
                 Image("Dummy")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .cornerRadius(16)
                     .frame(width: size.width, height: size.height)
                     .blur(radius: 10)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
             }
             Text("막혔던 돈의 에너지가 술술 풀리는 528Hz")
                 .font(.system(size: 16))
@@ -36,7 +36,7 @@ struct BannerCell: View {
                 .foregroundStyle(Color.white)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.white.opacity(0.16)
-                    .blur(radius: 12))
+                    .blur(radius: 8))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .onReadSize {
                     size = $0

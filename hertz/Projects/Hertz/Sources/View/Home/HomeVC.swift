@@ -11,154 +11,46 @@ import UIKit
 import SwiftUI
 import SnapKit
 
-class HomeVC: UIViewController, UIScrollViewDelegate {
+class HomeVC: BaseVC, UIScrollViewDelegate {
     
-    // MARK: - Foundation
-    private var scrollView: UIScrollView = {
-        let s = UIScrollView()
-        s.backgroundColor = .clear
-        s.showsVerticalScrollIndicator = false
-        return s
-    }()
+    private var scrollView: UIScrollView!
     
-    private var stack: UIStackView = {
-        let s = UIStackView()
-        s.axis = .vertical
-        s.alignment = .leading
-        s.spacing = 0
-        return s
-    }()
+    private var stack: UIStackView!
     
-    // MARK: - GNB
-    private var gnbBar: UIView = {
-        let v = UIView()
-        v.layer.zPosition = 2
-        v.backgroundColor = .gray800
-        
-        v.layer.shadowPath = UIBezierPath(roundedRect: v.bounds,
-                                          cornerRadius: v.layer.cornerRadius).cgPath
-        v.layer.shadowColor = UIColor.black.cgColor
-        v.layer.shadowOpacity = 0.0
-        v.layer.shadowOffset = .init(width: 0, height: 4)
-        v.layer.shadowRadius = 12
-        
-        
-        return v
-    }()
+    private var gnbBar: UIView!
     
     private let gnbHeight: CGFloat = 48
     
-    private var logo: UIImageView = {
-        if let image = UIImage(named: "Logo") {
-            let imageView = UIImageView(image: image)
-            return imageView
-        } else {
-            fatalError("Logo image is missing")
-        }
-    }()
+    private var logo: UIImageView!
     
-    // MARK: properties
     private var showShadow = false
     
-    // MARK: - Banner
-    private var banner: UIHostingController = {
-        let v = UIHostingController(rootView: BannerView())
-        v.view.backgroundColor = .gray800
-        return v
-    }()
+    private var banner: UIHostingController<BannerView>!
     
-    // MARK: - Title
-    private var titleContainer: UIView = {
-        let v = UIView()
-        return v
-    }()
+    private var titleContainer: UIView!
     
-    private var title1: UILabel = {
-        let l = UILabel()
-        l.text = "당신을 위한 주파수"
-        l.font = .systemFont(ofSize: 20, weight: .semibold)
-        l.textColor = .white
-        return l
-    }()
+    private var title1: UILabel!
     
-    // MARK: - ForYou
     private var forYouVC = ForYouVC()
     
-    // MARK: - Music
-    private var categoryContainer: UIStackView = {
-        let s = UIStackView()
-        s.axis = .horizontal
-        s.alignment = .center
-        s.distribution = .fill
-        s.spacing = 28
-        return s
-    }()
+    private var categoryContainer: UIStackView!
     
-    private var musicContainer: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 0
-        stack.alignment = .leading
-        stack.distribution = .fill
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
-    }()
+    private var musicContainer: UIStackView!
     
-    // MARK: properties
     private var musics: [MusicModel] = MusicModel.stubs
     private var musicCells: [MusicCell] = []
     
+    private var player: UIView!
     
-    // MARK: - player
-    private var player: UIView = {
-        let v = UIView()
-        v.layer.zPosition = 3
-        v.backgroundColor = .gray800
-        
-        v.layer.shadowPath = UIBezierPath(roundedRect: v.bounds,
-                                          cornerRadius: v.layer.cornerRadius).cgPath
-//        v.roundCorners(cornerRadius: 36, byRoundingCorners: [.topLeft, .topRight])
-        v.layer.shadowColor = UIColor.black.cgColor
-        v.layer.shadowOpacity = 0.15
-        v.layer.shadowOffset = .init(width: 0, height: 4)
-        v.layer.shadowRadius = 12
-        return v
-    }()
+    private var playingImage: UIImageView!
     
-    private var playingImage: UIImageView = {
-        let image = UIImageView()
-        let uiImage = UIImage(named: "Logo")
-        image.image = uiImage
-        image.layer.cornerRadius = 18
-        return image
-    }()
+    private var playingTitle: UILabel!
     
-    private var playingTitle: UILabel = {
-        let l = UILabel()
-        l.text = "모든 소원이 이루어지는 주파수"
-        l.font = .systemFont(ofSize: 16, weight: .medium)
-        l.textColor = .white
-        return l
-    }()
+    private var playingAuthor: UILabel!
     
-    private var playingAuthor: UILabel = {
-        let l = UILabel()
-        l.text = "Jazz Hot Cafe"
-        l.font = .systemFont(ofSize: 14, weight: .regular)
-        l.textColor = .gray500
-        return l
-    }()
+    private var playButton: UIButton!
     
-    private var playButton: UIButton = {
-        let uiImage = UIImage(named: "Play")
-        let button = UIButton()
-        button.setImage(uiImage, for: .normal)
-        return button
-    }()
-    
-    // MARK: properties
     private let playerHeight: CGFloat = 90
-    
     
     func createCategoryButton(title: String, isSelected: Bool = false) -> UIButton {
         let b = UIButton()
@@ -172,8 +64,6 @@ class HomeVC: UIViewController, UIScrollViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupScroll()
-        setUpStyle()
-        setUpLayout()
     }
     
     func setupScroll() {
@@ -181,11 +71,105 @@ class HomeVC: UIViewController, UIScrollViewDelegate {
         scrollView.addObserver(self, forKeyPath: "contentOffset", options:. new, context: nil)
     }
     
-    func setUpStyle() {
+    override func setUpStyle() {
         self.view.backgroundColor = .gray800
+        if let navigationController = self.navigationController {
+            navigationController.setNavigationBarHidden(true, animated: false)
+        }
+        
+        scrollView = .init().then {
+            $0.backgroundColor = .clear
+            $0.showsVerticalScrollIndicator = false
+        }
+        
+        stack = .init().then {
+            $0.axis = .vertical
+            $0.alignment = .leading
+            $0.spacing = 0
+        }
+        
+        gnbBar = .init().then {
+            $0.layer.zPosition = 2
+            $0.backgroundColor = .gray800
+            $0.layer.shadowPath = UIBezierPath(roundedRect: $0.bounds, cornerRadius: $0.layer.cornerRadius).cgPath
+            $0.layer.shadowColor = UIColor.black.cgColor
+            $0.layer.shadowOpacity = 0.0
+            $0.layer.shadowOffset = .init(width: 0, height: 4)
+            $0.layer.shadowRadius = 12
+        }
+        
+        logo = .init().then {
+            let uiImage = UIImage(named: "Logo")
+            $0.image = uiImage
+        }
+        
+        banner = .init(rootView: BannerView()).then {
+            $0.view.backgroundColor = .gray800
+        }
+        
+        titleContainer = .init().then { _ in
+            
+        }
+        
+        title1 = .init().then {
+            $0.text = "당신을 위한 주파수"
+            $0.font = .systemFont(ofSize: 20, weight: .semibold)
+            $0.textColor = .white
+        }
+        
+        categoryContainer = .init().then {
+            $0.axis = .horizontal
+            $0.alignment = .center
+            $0.distribution = .fill
+            $0.spacing = 28
+        }
+        
+        musicContainer = .init().then {
+            $0.axis = .vertical
+            $0.spacing = 0
+            $0.alignment = .leading
+            $0.distribution = .fill
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        player = .init().then {
+            $0.layer.zPosition = 3
+            $0.backgroundColor = .gray800
+            
+            $0.layer.shadowPath = UIBezierPath(roundedRect: $0.bounds, cornerRadius: $0.layer.cornerRadius).cgPath
+            //        v.roundCorners(cornerRadius: 36, byRoundingCorners: [.topLeft, .topRight])
+            $0.layer.shadowColor = UIColor.black.cgColor
+            $0.layer.shadowOpacity = 0.15
+            $0.layer.shadowOffset = .init(width: 0, height: 4)
+            $0.layer.shadowRadius = 12
+        }
+        
+        playingImage = .init().then {
+            let uiImage = UIImage(named: "Logo")
+            $0.image = uiImage
+            $0.layer.cornerRadius = 18
+        }
+        
+        playingTitle = .init().then {
+            $0.text = "모든 소원이 이루어지는 주파수"
+            $0.font = .systemFont(ofSize: 16, weight: .medium)
+            $0.textColor = .white
+        }
+        
+        playingAuthor = .init().then {
+            $0.text = "Jazz Hot Cafe"
+            $0.font = .systemFont(ofSize: 14, weight: .regular)
+            $0.textColor = .gray500
+        }
+        
+        playButton = .init().then {
+            let uiImage = UIImage(named: "Play")
+            $0.setImage(uiImage, for: .normal)
+        }
     }
     
-    func setUpLayout() {
+    override func configure() {
+        
         
         self.view.addSubview(scrollView)
         self.scrollView.addSubview(stack)
@@ -217,7 +201,10 @@ class HomeVC: UIViewController, UIScrollViewDelegate {
         categoryContainer.addArrangedSubview(createCategoryButton(title: "찜"))
         
         self.stack.addArrangedSubview(musicContainer)
-        musics.forEach { m in
+    }
+    
+    override func setUpLayout() {
+        Array(musics.enumerated()).forEach { idx, m in
             let image: UIImageView = {
                 let uiImage = UIImage(named: m.image)
                 let image = UIImageView()
@@ -227,7 +214,8 @@ class HomeVC: UIViewController, UIScrollViewDelegate {
             }()
             let v: UIButton = {
                 let v = UIButton()
-                v.addTarget(self, action: #selector(clickMusic), for: .touchUpInside)
+                v.addTarget(self, action: #selector(clickMusic(_:)), for: .touchUpInside)
+                v.tag = idx
                 return v
             }()
             let title: UILabel = {
@@ -275,7 +263,7 @@ class HomeVC: UIViewController, UIScrollViewDelegate {
         
         banner.view.snp.makeConstraints { make in
             make.top.equalTo(scrollView.contentLayoutGuide).offset(48)
-            make.leading.trailing.equalTo(gnbBar)
+            make.leading.trailing.equalTo(view)
             make.height.equalTo(72)
         }
         
@@ -377,8 +365,13 @@ class HomeVC: UIViewController, UIScrollViewDelegate {
         }
     }
     
-    @objc func clickMusic() {
-        print("Hello!")
+    @objc func clickMusic(_ sender: UIButton) {
+        let music = musics[sender.tag]
+        let detailVC = DetailVC()
+        print("\(#function) - \(music)")
+        detailVC.music = music
+        //        print(navigationController)
+        self.navigationController?.pushViewController(detailVC, animated: true)
     }
     
     deinit {

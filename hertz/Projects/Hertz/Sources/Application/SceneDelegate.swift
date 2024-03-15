@@ -1,4 +1,5 @@
 import UIKit
+import SnapKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -11,9 +12,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let scene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: scene)
-        window.rootViewController = HomeVC()
+        let homeVC = HomeVC()
+        let navigationVC = UINavigationController(rootViewController: homeVC)
+        window.rootViewController = navigationVC
         window.makeKeyAndVisible()
         self.window = window
+        
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {}
