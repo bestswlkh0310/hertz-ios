@@ -13,6 +13,7 @@ import SnapKit
 
 class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
     
+    override var isNavigationBarHidden: Bool { true }
     
     private var scrollView: UIScrollView!
     
@@ -63,21 +64,6 @@ class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
     func setupScroll() {
         scrollView.delegate = self
         scrollView.addObserver(self, forKeyPath: "contentOffset", options:. new, context: nil)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        homePresenter.fetchAll()
-        if let navigationController = self.navigationController {
-            navigationController.setNavigationBarHidden(true, animated: false)
-        }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if let navigationController = self.navigationController {
-            navigationController.setNavigationBarHidden(false, animated: false)
-        }
     }
     
     override func setUpStyle() {
