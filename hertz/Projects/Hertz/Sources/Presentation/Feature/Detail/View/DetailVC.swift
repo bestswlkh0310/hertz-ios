@@ -19,7 +19,7 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
     
     private var author: UILabel!
     
-    private var progressBar: UISlider!
+    private var slider: UISlider!
     
     private var progressObserver: NSKeyValueObservation!
     
@@ -91,14 +91,15 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
             $0.text = music.author
         }
         
-        progressBar = .init().then {
+        slider = .init().then {
             $0.minimumValue = 0.0
             $0.maximumValue = 1.0
             $0.value = 0.0
             $0.minimumTrackTintColor = .gray200
             $0.maximumTrackTintColor = .gray700
             $0.thumbTintColor = .white
-            let thumb = UIImage(named: "Thumb")
+            let thumb = UIImage(named: "Thumb")?.resizeImage(targetSize: .init(width: 14, height: 14))
+            $0.addTarget(self, action: #selector(sliderChanded), for: .touchUpInside)
             $0.setThumbImage(thumb, for: .normal)
         }
         
@@ -142,7 +143,7 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
         view.addSubview(infoStack)
         infoStack.addArrangedSubview(titleLabel)
         infoStack.addArrangedSubview(author)
-        infoStack.addArrangedSubview(progressBar)
+        infoStack.addArrangedSubview(slider)
         infoStack.addArrangedSubview(timeStack)
         timeStack.addArrangedSubview(startTime)
         timeStack.addArrangedSubview(endTime)
@@ -169,11 +170,11 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
         }
         
         author.snp.makeConstraints { make in
-            make.bottom.equalTo(progressBar.snp.top).offset(-16)
+            make.bottom.equalTo(slider.snp.top).offset(-16)
             make.leading.equalTo(infoStack)
         }
         
-        progressBar.snp.makeConstraints { make in
+        slider.snp.makeConstraints { make in
             make.leading.equalTo(infoStack)
             make.trailing.equalTo(infoStack)
             make.bottom.equalTo(timeStack.snp.top).offset(-8)
@@ -268,9 +269,13 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
            let s = c.second {
             startTime.text = String(format: "%d:%02d", arguments: [m, s])
             if let totalDate = totalDate {
-                progressBar.value = Float(currentTime / totalDate.timeIntervalSince1970)
+                slider.value = Float(currentTime / totalDate.timeIntervalSince1970)
             }
         }
+    }
+    
+    @objc func sliderChanded(_ sender: UISlider) {
+        audioPlayer.currentTime = (totalDate?.timeIntervalSince1970 ?? 0) * Double(sender.value)
     }
     
     deinit {
