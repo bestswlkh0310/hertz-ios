@@ -26,8 +26,8 @@ class ForYouCell: UICollectionViewCell {
         return l
     }()
     
-    public func setMusic(music: MusicModel) {
-        self.title.text = music.title
+    public func setMusic(music: Music) {
+        self.title.text = music.music
         self.author.text = music.author
     }
 
@@ -94,7 +94,7 @@ class ForYouVC: UIViewController, UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ForYouCell
-        cell.setMusic(music: MusicModel(image: "Logo", title: "연애운을 팍팍 올려주...", author: "Milo"))
+        cell.setMusic(music: Music(id: .random(in: 0..<100000),music: "연애운을 팍팍 올려주...", author: "Milo", image: "Logo"))
         return cell
     }
     

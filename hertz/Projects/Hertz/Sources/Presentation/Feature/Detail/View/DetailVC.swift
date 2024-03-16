@@ -4,7 +4,7 @@ import SnapKit
 
 class DetailVC: BaseVC, UINavigationControllerDelegate {
     
-    var music: MusicModel!
+    var music: Music!
     
     private var backButton: UIBarButtonItem!
     
@@ -65,7 +65,7 @@ class DetailVC: BaseVC, UINavigationControllerDelegate {
         titleLabel = .init().then {
             $0.font = .systemFont(ofSize: 20, weight: .semibold)
             $0.textColor = .white
-            $0.text = music.title
+            $0.text = music.music
         }
         
         author = .init().then {

@@ -11,7 +11,8 @@ import UIKit
 import SwiftUI
 import SnapKit
 
-class HomeVC: BaseVC, UIScrollViewDelegate {
+class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
+    
     
     private var scrollView: UIScrollView!
     
@@ -37,7 +38,6 @@ class HomeVC: BaseVC, UIScrollViewDelegate {
     
     private var musicContainer: UIStackView!
     
-    private var musics: [MusicModel] = MusicModel.stubs
     private var musicCells: [MusicCell] = []
     
     private var player: UIView!
@@ -52,18 +52,12 @@ class HomeVC: BaseVC, UIScrollViewDelegate {
     
     private let playerHeight: CGFloat = 90
     
-    func createCategoryButton(title: String, isSelected: Bool = false) -> UIButton {
-        let b = UIButton()
-        b.setTitle(title, for: .normal)
-        let titleColor: UIColor = isSelected ? .white : .gray500
-        b.setTitleColor(titleColor, for: .normal)
-        b.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        return b
-    }
+    private let homePresenter = HomePresenter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupScroll()
+        homePresenter.setDelegate(delegate: self)
     }
     
     func setupScroll() {
@@ -73,6 +67,7 @@ class HomeVC: BaseVC, UIScrollViewDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        homePresenter.fetchAll()
         if let navigationController = self.navigationController {
             navigationController.setNavigationBarHidden(true, animated: false)
         }
@@ -214,41 +209,6 @@ class HomeVC: BaseVC, UIScrollViewDelegate {
     }
     
     override func setUpLayout() {
-        Array(musics.enumerated()).forEach { idx, m in
-            let image: UIImageView = {
-                let uiImage = UIImage(named: m.image)
-                let image = UIImageView()
-                image.image = uiImage
-                image.layer.cornerRadius = 16
-                return image
-            }()
-            let v: UIButton = {
-                let v = UIButton()
-                v.addTarget(self, action: #selector(clickMusic(_:)), for: .touchUpInside)
-                v.tag = idx
-                return v
-            }()
-            let title: UILabel = {
-                let title = UILabel()
-                title.text = m.title
-                title.textColor = .white
-                title.font = .systemFont(ofSize: 16, weight: .medium)
-                return title
-            }()
-            let author: UILabel = {
-                let author = UILabel()
-                author.text = m.author
-                author.textColor = .gray500
-                author.font = .systemFont(ofSize: 14, weight: .regular)
-                return author
-            }()
-            let m = MusicCell(container: v, image: image, title: title, author: author)
-            m.container.addSubview(m.image)
-            m.container.addSubview(m.title)
-            m.container.addSubview(m.author)
-            musicContainer.addArrangedSubview(m.container)
-            musicCells.append(m)
-        }
         
         scrollView.snp.makeConstraints { make in
             make.top.bottom.equalTo(view.layoutMarginsGuide)
@@ -307,26 +267,6 @@ class HomeVC: BaseVC, UIScrollViewDelegate {
             make.height.equalTo(musicCells.count * 72)
         }
         
-        musicCells.forEach { m in
-            m.container.snp.makeConstraints { make in
-                make.height.equalTo(72)
-                make.leading.trailing.equalTo(musicContainer)
-            }
-            m.image.snp.makeConstraints { make in
-                make.top.bottom.equalTo(m.container)
-                make.leading.equalTo(m.container).offset(24)
-                make.width.height.equalTo(54)
-            }
-            m.title.snp.makeConstraints { make in
-                make.leading.equalTo(m.image.snp.trailing).offset(10)
-                make.top.equalTo(m.image).offset(4)
-            }
-            m.author.snp.makeConstraints { make in
-                make.leading.equalTo(m.image.snp.trailing).offset(10)
-                make.top.equalTo(m.title.snp.bottom).offset(2)
-            }
-        }
-        
         player.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalTo(musicContainer)
@@ -354,6 +294,72 @@ class HomeVC: BaseVC, UIScrollViewDelegate {
         }
     }
     
+    func make(musics: [Music]) {
+        musicCells = []
+        musicContainer.arrangedSubviews.forEach {
+            $0.removeFromSuperview()
+        }
+        Array(musics.enumerated()).forEach { idx, m in
+            let image = UIImageView().then {
+                let uiImage = UIImage(named: m.image)
+                $0.image = uiImage
+                $0.layer.cornerRadius = 16
+            }
+            let v = UIButton().then {
+                $0.addTarget(self, action: #selector(clickMusic(_:)), for: .touchUpInside)
+                $0.tag = idx
+            }
+            let title = UILabel().then {
+                $0.text = m.music
+                $0.textColor = .white
+                $0.font = .systemFont(ofSize: 16, weight: .medium)
+            }
+            let author = UILabel().then {
+                $0.text = m.author
+                $0.textColor = .gray500
+                $0.font = .systemFont(ofSize: 14, weight: .regular)
+            }
+            let music = MusicCell(container: v, image: image, music: title, author: author)
+            music.do {
+                print($0)
+                $0.container.addSubview($0.image)
+                $0.container.addSubview($0.music)
+                $0.container.addSubview($0.author)
+                musicContainer.addArrangedSubview($0.container)
+                musicCells.append($0)
+            }
+        }
+        
+        musicCells.forEach { m in
+            m.container.snp.makeConstraints { make in
+                make.height.equalTo(72)
+                make.leading.trailing.equalTo(musicContainer)
+            }
+            m.image.snp.makeConstraints { make in
+                make.top.bottom.equalTo(m.container)
+                make.leading.equalTo(m.container).offset(24)
+                make.width.height.equalTo(54)
+            }
+            m.music.snp.makeConstraints { make in
+                make.leading.equalTo(m.image.snp.trailing).offset(10)
+                make.top.equalTo(m.image).offset(4)
+            }
+            m.author.snp.makeConstraints { make in
+                make.leading.equalTo(m.image.snp.trailing).offset(10)
+                make.top.equalTo(m.music.snp.bottom).offset(2)
+            }
+        }
+    }
+    
+    func createCategoryButton(title: String, isSelected: Bool = false) -> UIButton {
+        let b = UIButton()
+        b.setTitle(title, for: .normal)
+        let titleColor: UIColor = isSelected ? .white : .gray500
+        b.setTitleColor(titleColor, for: .normal)
+        b.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        return b
+    }
+    
     func showGnbShadow() {
         gnbBar.layer.shadowOpacity = 0.16
     }
@@ -376,11 +382,17 @@ class HomeVC: BaseVC, UIScrollViewDelegate {
     }
     
     @objc func clickMusic(_ sender: UIButton) {
-        let music = musics[sender.tag]
+        print("clicked")
+        homePresenter.clickMusic(tag: sender.tag)
+    }
+    
+    func displayMusics(musics: [Music]) {
+        make(musics: musics)
+    }
+    
+    func navigateDetail(music: Music) {
         let detailVC = DetailVC()
-        print("\(#function) - \(music)")
         detailVC.music = music
-        //        print(navigationController)
         self.navigationController?.pushViewController(detailVC, animated: true)
     }
     

@@ -1,8 +1,9 @@
 import UIKit
+import Then
 
-struct MusicCell {
+struct MusicCell: Then {
     let container: UIButton
     let image: UIImageView
-    let title: UILabel
+    let music: UILabel
     let author: UILabel
 }
