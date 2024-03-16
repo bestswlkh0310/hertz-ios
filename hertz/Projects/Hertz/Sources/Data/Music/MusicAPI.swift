@@ -11,4 +11,10 @@ class MusicAPI {
         let response = try decoder.decode([MusicResponse].self, from: data)
         return response.map { $0.toDomain() }
     }
+    
+    static func getMusic(id: Int) async throws -> Data {
+        let url = URL(string: "\(Constant.baseUrl)/music/\(id)")!
+        let (data, _) = try await session.data(from: url)
+        return data
+    }
 }

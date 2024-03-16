@@ -1,9 +1,9 @@
 import UIKit
 import Then
 import SnapKit
+import AVKit
 
-class DetailVC: BaseVC, UINavigationControllerDelegate {
-    
+class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioPlayerDelegate {
     var music: Music!
     
     private var backButton: UIBarButtonItem!
@@ -32,15 +32,25 @@ class DetailVC: BaseVC, UINavigationControllerDelegate {
     
     private var afterButton: UIButton!
     
+    private var detailPresenter = DetailPresenter()
+    
+    private var audioPlayer: AVAudioPlayer!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "재생중" // TODO: rm dummy
         self.backButton = .init(title: "<", style: .plain, target: self, action: #selector(backButtonTapped))
+        detailPresenter.setDelegate(delegate: self)
         navigationController?.delegate = self
         navigationItem.leftBarButtonItem = backButton
         if let navigationController = self.navigationController {
             navigationController.interactivePopGestureRecognizer?.delegate = self
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        detailPresenter.fetchMusic(id: music.id)
     }
     
     override func setUpStyle() {
@@ -101,6 +111,7 @@ class DetailVC: BaseVC, UINavigationControllerDelegate {
         startButton = .init().then {
             let uiImage = UIImage(named: "Play")?.resizeImage(targetSize: .init(width: 84, height: 64))
             $0.setImage(uiImage, for: .normal)
+            $0.addTarget(self, action: #selector(clickStartButton), for: .touchUpInside)
         }
         
         beforeButton = .init().then {
@@ -191,6 +202,28 @@ class DetailVC: BaseVC, UINavigationControllerDelegate {
     
     @objc func backButtonTapped() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    @objc func clickStartButton() {
+        detailPresenter.clickStartButton()
+    }
+    
+
+    func playMusic(url: URL) {
+        do {
+            print("play...")
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer.delegate = self
+            audioPlayer.play()
+        } catch {
+            debugPrint(error)
+        }
+        // TODO: Change Icon
+    }
+    
+    func stopMusic(url: URL) {
+        // TODO: Change Icon
+        print("\(#function) - stop music")
     }
     
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
