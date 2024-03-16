@@ -263,8 +263,8 @@ class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
         
         musicContainer.snp.makeConstraints { make in
             make.top.equalTo(categoryContainer.snp.bottom)
-            make.leading.trailing.equalTo(stack)
-            make.height.equalTo(musicCells.count * 72)
+            make.leading.equalTo(stack).offset(24)
+            make.trailing.equalTo(stack).offset(-24)
         }
         
         player.snp.makeConstraints { make in
@@ -296,8 +296,9 @@ class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
     
     func make(musics: [Music]) {
         musicCells = []
-        musicContainer.arrangedSubviews.forEach {
-            $0.removeFromSuperview()
+        musicContainer.arrangedSubviews.forEach { musicCell in
+            musicContainer.removeArrangedSubview(musicCell)
+            musicCell.removeFromSuperview()
         }
         Array(musics.enumerated()).forEach { idx, m in
             let image = UIImageView().then {
@@ -312,11 +313,15 @@ class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
             let title = UILabel().then {
                 $0.text = m.music
                 $0.textColor = .white
+                $0.numberOfLines = 0
+                $0.sizeToFit()
                 $0.font = .systemFont(ofSize: 16, weight: .medium)
             }
             let author = UILabel().then {
                 $0.text = m.author
                 $0.textColor = .gray500
+                $0.numberOfLines = 0
+                $0.sizeToFit()
                 $0.font = .systemFont(ofSize: 14, weight: .regular)
             }
             let music = MusicCell(container: v, image: image, music: title, author: author)
@@ -332,21 +337,23 @@ class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
         
         musicCells.forEach { m in
             m.container.snp.makeConstraints { make in
-                make.height.equalTo(72)
+                make.height.greaterThanOrEqualTo(72)
                 make.leading.trailing.equalTo(musicContainer)
             }
             m.image.snp.makeConstraints { make in
                 make.top.bottom.equalTo(m.container)
-                make.leading.equalTo(m.container).offset(24)
+                make.leading.equalTo(m.container)
                 make.width.height.equalTo(54)
             }
             m.music.snp.makeConstraints { make in
                 make.leading.equalTo(m.image.snp.trailing).offset(10)
+                make.trailing.equalTo(m.container)
                 make.top.equalTo(m.image).offset(4)
             }
             m.author.snp.makeConstraints { make in
                 make.leading.equalTo(m.image.snp.trailing).offset(10)
                 make.top.equalTo(m.music.snp.bottom).offset(2)
+                make.trailing.equalTo(m.container)
             }
         }
     }
