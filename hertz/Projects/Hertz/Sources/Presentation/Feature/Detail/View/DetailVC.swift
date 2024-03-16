@@ -36,6 +36,10 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
     
     private var audioPlayer: AVAudioPlayer!
     
+    private var totalDate: Date?
+    
+    private var timer: Timer?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "재생중" // TODO: rm dummy
@@ -85,7 +89,7 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
         }
         
         progressBar = .init(progressViewStyle: .default).then {
-            $0.progress = 0.3
+            $0.progress = 0.0
             $0.progressTintColor = .gray200
             $0.trackTintColor = .gray700
         }
@@ -97,13 +101,13 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
         }
         
         startTime = .init().then {
-            $0.text = "0:03"
+            $0.text = "-"
             $0.textColor = .gray500
             $0.font = .systemFont(ofSize: 14, weight: .medium)
         }
         
         endTime = .init().then {
-            $0.text = "2:36"
+            $0.text = "-"
             $0.textColor = .gray500
             $0.font = .systemFont(ofSize: 14, weight: .medium)
         }
@@ -208,14 +212,33 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
         detailPresenter.clickStartButton()
     }
     
+    func fetchedMusic(url: URL) {
+        if let date = url.musicDate {
+            totalDate = date
+        }
+        let c = url.musicDate?.components
+        if let m = c?.minute,
+           let s = c?.second {
+            startTime.text = "0:00"
+            endTime.text = String(format: "%d:%02d", arguments: [m, s])
+        }
+    }
 
     func playMusic(url: URL) {
         do {
             print("play...")
+            print(url.absoluteURL)
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
             audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer.prepareToPlay()
             audioPlayer.delegate = self
+            audioPlayer.volume = 1
             audioPlayer.play()
+            
+            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateAudio), userInfo: nil, repeats: true)
         } catch {
+            print("error...")
             debugPrint(error)
         }
         // TODO: Change Icon
@@ -224,10 +247,27 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
     func stopMusic(url: URL) {
         // TODO: Change Icon
         print("\(#function) - stop music")
+        audioPlayer.pause()
     }
     
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         navigationController.navigationBar.tintColor = .white
+    }
+    
+    @objc func updateAudio() {
+        let currentTime = audioPlayer.currentTime
+        let c = Date(timeIntervalSince1970: currentTime).components
+        if let m = c.minute,
+           let s = c.second {
+            startTime.text = String(format: "%d:%02d", arguments: [m, s])
+            if let totalDate = totalDate {
+                progressBar.progress = Float(currentTime / totalDate.timeIntervalSince1970)
+            }
+        }
+    }
+    
+    deinit {
+        timer?.invalidate()
     }
 }
 

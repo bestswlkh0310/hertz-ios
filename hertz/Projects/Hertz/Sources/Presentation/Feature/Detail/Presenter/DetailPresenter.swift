@@ -19,16 +19,13 @@ class DetailPresenter {
                 let filename = "playing-music.mp3"
                 let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 let fileURL = documentsURL.appendingPathComponent(filename)
-                
                 try data.write(to: fileURL)
+                print("\(#function) \(fileURL)")
+                self.tempUrl = fileURL
                 
-                if let tempUrl = tempUrl {
-                    print("\(#function) \(tempUrl)")
-                    self.tempUrl = fileURL
-                } else {
-                    print("\(#function) tempUrl is nil")
+                DispatchQueue.main.async {
+                    self.delegate.fetchedMusic(url: fileURL)
                 }
-                
             } catch {
                 debugPrint(error)
             }
@@ -43,8 +40,8 @@ class DetailPresenter {
                 } else {
                     self.delegate.playMusic(url: tempUrl)
                 }
+                self.isPlaying.toggle()
             }
-            isPlaying.toggle()
         }
     }
 }

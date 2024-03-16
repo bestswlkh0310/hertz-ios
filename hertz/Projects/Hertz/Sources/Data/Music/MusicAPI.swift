@@ -13,7 +13,7 @@ class MusicAPI {
     }
     
     static func getMusic(id: Int) async throws -> Data {
-        let url = URL(string: "\(Constant.baseUrl)/music/\(id)")!
+        let url = URL(string: "\(Constant.baseUrl)/musics/\(id)")!
         let (data, _) = try await session.data(from: url)
         return data
     }

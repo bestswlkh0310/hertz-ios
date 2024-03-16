@@ -11,6 +11,10 @@
 	</dict>
 	<key>NSFileProviderPresenceUsageDescription</key>
 	<string>&apos;헤르츠&apos;가 파일에 접근하려 합니다.</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 	<key>NSDocumentsFolderUsageDescription</key>
 	<string>&apos;헤르츠&apos;가 사용자의 문서 폴더에 액세스하려 합니다.</string>
 	<key>CFBundleExecutable</key>
