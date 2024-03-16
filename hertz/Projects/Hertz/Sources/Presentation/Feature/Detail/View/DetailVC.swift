@@ -6,6 +6,9 @@ import AVKit
 class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioPlayerDelegate {
     var music: Music!
     
+    private var playIcon = UIImage(named: "Play")?.resizeImage(targetSize: .init(width: 84, height: 64))
+    private var pauseIcon = UIImage(named: "Pause")?.resizeImage(targetSize: .init(width: 84, height: 64))
+    
     private var backButton: UIBarButtonItem!
     
     private var image: UIImageView!
@@ -16,7 +19,7 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
     
     private var author: UILabel!
     
-    private var progressBar: UIProgressView!
+    private var progressBar: UISlider!
     
     private var progressObserver: NSKeyValueObservation!
     
@@ -88,10 +91,15 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
             $0.text = music.author
         }
         
-        progressBar = .init(progressViewStyle: .default).then {
-            $0.progress = 0.0
-            $0.progressTintColor = .gray200
-            $0.trackTintColor = .gray700
+        progressBar = .init().then {
+            $0.minimumValue = 0.0
+            $0.maximumValue = 1.0
+            $0.value = 0.0
+            $0.minimumTrackTintColor = .gray200
+            $0.maximumTrackTintColor = .gray700
+            $0.thumbTintColor = .white
+            let thumb = UIImage(named: "Thumb")
+            $0.setThumbImage(thumb, for: .normal)
         }
         
         timeStack = .init().then {
@@ -113,7 +121,7 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
         }
         
         startButton = .init().then {
-            let uiImage = UIImage(named: "Play")?.resizeImage(targetSize: .init(width: 84, height: 64))
+            let uiImage = playIcon
             $0.setImage(uiImage, for: .normal)
             $0.addTarget(self, action: #selector(clickStartButton), for: .touchUpInside)
         }
@@ -141,12 +149,6 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
         view.addSubview(startButton)
         view.addSubview(beforeButton)
         view.addSubview(afterButton)
-        
-        progressObserver = progressBar.observe(\.progress, options: [.new]) { progressBar, change in
-            if let newValue = change.newValue {
-                
-            }
-        }
     }
     
     override func setUpLayout() {
@@ -226,10 +228,9 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
 
     func playMusic(url: URL) {
         do {
+            startButton.setImage(pauseIcon, for: .normal)
             print("play...")
             print(url.absoluteURL)
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer.prepareToPlay()
             audioPlayer.delegate = self
@@ -237,6 +238,8 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
             audioPlayer.play()
             
             timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateAudio), userInfo: nil, repeats: true)
+            
+            
         } catch {
             print("error...")
             debugPrint(error)
@@ -246,8 +249,12 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
     
     func stopMusic(url: URL) {
         // TODO: Change Icon
+        startButton.setImage(playIcon, for: .normal)
         print("\(#function) - stop music")
-        audioPlayer.pause()
+        if let audioPlayer = audioPlayer {
+            audioPlayer.pause()
+        }
+        
     }
     
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
@@ -261,7 +268,7 @@ class DetailVC: BaseVC, UINavigationControllerDelegate, DetailDelegate, AVAudioP
            let s = c.second {
             startTime.text = String(format: "%d:%02d", arguments: [m, s])
             if let totalDate = totalDate {
-                progressBar.progress = Float(currentTime / totalDate.timeIntervalSince1970)
+                progressBar.value = Float(currentTime / totalDate.timeIntervalSince1970)
             }
         }
     }

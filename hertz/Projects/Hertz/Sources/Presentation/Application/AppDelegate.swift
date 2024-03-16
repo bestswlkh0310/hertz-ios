@@ -1,4 +1,5 @@
 import UIKit
+import AVKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -12,6 +13,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow()
         window?.rootViewController = UINavigationController(rootViewController: HomeVC())
         window?.makeKeyAndVisible()
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            debugPrint(error)
+        }
         return true
     }
     
