@@ -11,7 +11,7 @@ import UIKit
 import SwiftUI
 import SnapKit
 
-class HomeVC: BaseViewController, UIScrollViewDelegate, HomeDelegate {
+class HomeViewController: BaseViewController, UIScrollViewDelegate, HomeDelegate {
     
     override var isNavigationBarHidden: Bool { true }
     

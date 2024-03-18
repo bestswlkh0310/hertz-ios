@@ -1,16 +1,6 @@
 import UIKit
 import SnapKit
 
-import SwiftUI
-
-struct HomeView: View {
-    var body: some View {
-        // ...
-        
-        Group {}
-    }
-}
-
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
@@ -22,7 +12,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let scene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: scene)
-        let homeVC = HomeVC()
+        let homeVC = HomeViewController()
         let navigationVC = UINavigationController(rootViewController: homeVC)
         window.rootViewController = navigationVC
         window.makeKeyAndVisible()
