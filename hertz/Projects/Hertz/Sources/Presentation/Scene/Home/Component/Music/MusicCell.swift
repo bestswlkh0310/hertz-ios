@@ -1,7 +1,7 @@
 import UIKit
 import Then
 
-class MusicCell: BaseView {
+class MusicCell: BaseCollectionViewCell {
     var container = UIButton()
     var image = UIImageView()
     var music = UILabel()
@@ -44,15 +44,16 @@ class MusicCell: BaseView {
     
     override func configure() {
         super.configure()
-        addSubview(image)
-        addSubview(music)
-        addSubview(author)
+        contentView.addSubview(container)
+        container.addSubview(image)
+        container.addSubview(music)
+        container.addSubview(author)
     }
     
     override func setUpLayout() {
         super.setUpLayout()
         container.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(72)
+            make.height.equalTo(72)
             make.leading.trailing.equalToSuperview()
         }
         image.snp.makeConstraints { make in
@@ -75,5 +76,9 @@ class MusicCell: BaseView {
     @objc
     func clickMusic(_ sender: UIButton) {
         onClick()
+    }
+    
+    func setMusic(music: Music) {
+        self.musicModel = music
     }
 }

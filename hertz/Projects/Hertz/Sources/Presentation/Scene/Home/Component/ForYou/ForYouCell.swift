@@ -14,11 +14,6 @@ class ForYouCell: BaseCollectionViewCell {
         super.init(frame: frame)
     }
     
-    public func setMusic(music: Music) {
-        self.title.text = music.music
-        self.author.text = music.author
-    }
-    
     override func setUpStyle() {
         super.setUpStyle()
         logo.do {
@@ -64,7 +59,8 @@ class ForYouCell: BaseCollectionViewCell {
         }
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    public func setMusic(music: Music) {
+        self.title.text = music.music
+        self.author.text = music.author
     }
 }

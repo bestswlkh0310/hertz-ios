@@ -27,9 +27,7 @@ class HomeView: BaseView {
     
     private var categoryContainer = UIStackView()
     
-    private var musicContainer = UIStackView()
-    
-    private var musicCells: [MusicCell] = []
+    private var musicViewController = MusicViewController()
     
     private var player = UIView()
     
@@ -93,12 +91,8 @@ class HomeView: BaseView {
             $0.spacing = 28
         }
         
-        musicContainer.do {
-            $0.axis = .vertical
-            $0.spacing = 0
-            $0.alignment = .leading
-            $0.distribution = .fill
-            $0.translatesAutoresizingMaskIntoConstraints = false
+        musicViewController.do { _ in
+            
         }
         
         player.do {
@@ -153,20 +147,18 @@ class HomeView: BaseView {
         self.gnbBar.addSubview(logo)
         
         self.stack.addArrangedSubview(banner.view)
-        
         self.stack.addArrangedSubview(titleContainer)
         
         self.titleContainer.addSubview(title1)
         
         self.stack.addArrangedSubview(forYouVC.view)
-        
-        
         self.stack.addArrangedSubview(categoryContainer)
+        
         categoryContainer.addArrangedSubview(createCategoryButton(title: "최근 들은", isSelected: true))
         categoryContainer.addArrangedSubview(createCategoryButton(title: "인기 있는"))
         categoryContainer.addArrangedSubview(createCategoryButton(title: "찜"))
         
-        self.stack.addArrangedSubview(musicContainer)
+        self.stack.addArrangedSubview(musicViewController.view)
     }
     
     override func setUpLayout() {
@@ -223,7 +215,7 @@ class HomeView: BaseView {
             make.height.equalTo(48)
         }
         
-        musicContainer.snp.makeConstraints { make in
+        musicViewController.view.snp.makeConstraints { make in
             make.top.equalTo(categoryContainer.snp.bottom)
             make.leading.equalTo(stack).offset(24)
             make.trailing.equalTo(stack).offset(-24)
@@ -231,7 +223,7 @@ class HomeView: BaseView {
         
         player.snp.makeConstraints { make in
             make.bottom.equalTo(safeAreaLayoutGuide)
-            make.leading.trailing.equalTo(musicContainer)
+            make.leading.trailing.equalTo(musicViewController.view)
             make.height.equalTo(playerHeight)
         }
         
@@ -293,13 +285,15 @@ class HomeView: BaseView {
             delegate.useViewController {
                 $0.addChild(banner)
                 banner.didMove(toParent: $0)
-            }
-            delegate.useViewController {
-                forYouVC.didMove(toParent: $0)
+                
                 $0.addChild(forYouVC)
+                forYouVC.didMove(toParent: $0)
+                
+                $0.addChild(musicViewController)
+                musicViewController.didMove(toParent: $0)
             }
         } else {
-            print("delegate is nil")
+            print("\(#file) delegate is nil")
         }
     }
     
@@ -310,5 +304,9 @@ class HomeView: BaseView {
     
     func removeScrollViewObserver(_ observer: NSObject, forKeyPath keyPath: String) {
         scrollView.removeObserver(observer, forKeyPath: keyPath)
+    }
+    
+    func updateMusics(musics: [Music]) {
+        musicViewController.updateMusics(musics: musics)
     }
 }

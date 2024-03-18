@@ -7,7 +7,11 @@ class HomeViewController: BaseViewController, UIScrollViewDelegate {
     
     override var isNavigationBarHidden: Bool { true }
     
-    private var musics: [Music] = []
+    private var musics: [Music] = [] {
+        didSet {
+            homeView.updateMusics(musics: musics)
+        }
+    }
     
     private var homeView = HomeView()
     
@@ -28,10 +32,6 @@ class HomeViewController: BaseViewController, UIScrollViewDelegate {
     @objc func clickMusic(_ sender: UIButton) {
         print("clicked")
         self.clickMusic(tag: sender.tag)
-    }
-    
-    func displayMusics(musics: [Music]) {
-//        make(musics: musics)
     }
     
     func navigateDetail(music: Music) {
@@ -57,7 +57,7 @@ extension HomeViewController: HomeDelegate {
                 let musics = try await MusicAPI.getMusics()
                 self.musics = musics
                 DispatchQueue.main.async {
-                    self.displayMusics(musics: musics)
+                    self.musics = musics
                 }
             } catch {
                 debugPrint(error)
