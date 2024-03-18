@@ -1,7 +1,7 @@
 import UIKit
 import SnapKit
 
-class ForYouViwController: BaseViewController {
+class ForYouViewController: BaseViewController {
     
     private let itemCount = 20
     
@@ -10,17 +10,17 @@ class ForYouViwController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view = forYouView
+        forYouView.configureCollectionView(dataSource: self, delegate: self)
     }
 }
 
-extension ForYouViwController: UICollectionViewDataSource {
+extension ForYouViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return itemCount
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         let cell = forYouView.getCell(idx: indexPath)
 
         return cell
@@ -30,7 +30,7 @@ extension ForYouViwController: UICollectionViewDataSource {
     }
 }
 
-extension ForYouViwController: UICollectionViewDelegateFlowLayout {
+extension ForYouViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 154, height: collectionView.bounds.height)

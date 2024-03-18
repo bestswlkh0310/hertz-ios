@@ -8,14 +8,19 @@ class ForYouCell: BaseCollectionViewCell {
     
     private var author = UILabel()
     
+    private var music: Music?
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
     public func setMusic(music: Music) {
         self.title.text = music.music
         self.author.text = music.author
     }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
+    
+    override func setUpStyle() {
+        super.setUpStyle()
         logo.do {
             let image = UIImage(named: "Logo")
             $0.image = image
@@ -28,10 +33,6 @@ class ForYouCell: BaseCollectionViewCell {
             $0.textColor = .gray500
             $0.font = .systemFont(ofSize: 14, weight: .regular)
         }
-    }
-    
-    override func setUpStyle() {
-        super.setUpStyle()
     }
     
     override func configure() {

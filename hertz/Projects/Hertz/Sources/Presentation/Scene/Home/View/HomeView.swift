@@ -5,47 +5,43 @@ class HomeView: BaseView {
     
     private var delegate: HomeDelegate?
     
-    private var scrollView: UIScrollView!
+    private var scrollView = UIScrollView()
     
-    private var stack: UIStackView!
+    private var stack = UIStackView()
     
-    private var gnbBar: UIView!
+    private var gnbBar = UIView()
     
     private let gnbHeight: CGFloat = 48
     
-    private var logo: UIImageView!
+    private var logo = UIImageView()
     
     private var showShadow = false
     
-    private var banner: UIHostingController<BannerView>!
+    private var banner = UIHostingController<BannerView>(rootView: BannerView())
     
-    private var titleContainer: UIView!
+    private var titleContainer = UIView()
     
-    private var title1: UILabel!
+    private var title1 = UILabel()
     
-    private var forYouVC = ForYouViwController()
+    private var forYouVC = ForYouViewController()
     
-    private var categoryContainer: UIStackView!
+    private var categoryContainer = UIStackView()
     
-    private var musicContainer: UIStackView!
+    private var musicContainer = UIStackView()
     
     private var musicCells: [MusicCell] = []
     
-    private var player: UIView!
+    private var player = UIView()
     
-    private var playingImage: UIImageView!
+    private var playingImage = UIImageView()
     
-    private var playingTitle: UILabel!
+    private var playingTitle = UILabel()
     
-    private var playingAuthor: UILabel!
+    private var playingAuthor = UILabel()
     
-    private var playButton: UIButton!
+    private var playButton = UIButton()
     
     private let playerHeight: CGFloat = 90
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
     
     override func setUpStyle() {
         super.setUpStyle()
@@ -55,13 +51,13 @@ class HomeView: BaseView {
             $0.showsVerticalScrollIndicator = false
         }
         
-        stack = .init().then {
+        stack.do {
             $0.axis = .vertical
             $0.alignment = .leading
             $0.spacing = 0
         }
         
-        gnbBar = .init().then {
+        gnbBar.do {
             $0.layer.zPosition = 2
             $0.backgroundColor = .gray800
             $0.layer.shadowPath = UIBezierPath(roundedRect: $0.bounds, cornerRadius: $0.layer.cornerRadius).cgPath
@@ -71,7 +67,7 @@ class HomeView: BaseView {
             $0.layer.shadowRadius = 12
         }
         
-        logo = .init().then {
+        logo.do {
             let uiImage = UIImage(named: "Logo")
             $0.image = uiImage
         }
@@ -80,24 +76,24 @@ class HomeView: BaseView {
             $0.view.backgroundColor = .gray800
         }
         
-        titleContainer = .init().then { _ in
+        titleContainer.do { _ in
             
         }
         
-        title1 = .init().then {
+        title1.do {
             $0.text = "당신을 위한 주파수"
             $0.font = .systemFont(ofSize: 20, weight: .semibold)
             $0.textColor = .white
         }
         
-        categoryContainer = .init().then {
+        categoryContainer.do {
             $0.axis = .horizontal
             $0.alignment = .center
             $0.distribution = .fill
             $0.spacing = 28
         }
         
-        musicContainer = .init().then {
+        musicContainer.do {
             $0.axis = .vertical
             $0.spacing = 0
             $0.alignment = .leading
@@ -105,7 +101,7 @@ class HomeView: BaseView {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         
-        player = .init().then {
+        player.do {
             $0.layer.zPosition = 3
             $0.backgroundColor = .gray800
             
@@ -117,25 +113,25 @@ class HomeView: BaseView {
             $0.layer.shadowRadius = 12
         }
         
-        playingImage = .init().then {
+        playingImage.do {
             let uiImage = UIImage(named: "Logo")
             $0.image = uiImage
             $0.layer.cornerRadius = 18
         }
         
-        playingTitle = .init().then {
+        playingTitle.do {
             $0.text = "모든 소원이 이루어지는 주파수"
             $0.font = .systemFont(ofSize: 16, weight: .medium)
             $0.textColor = .white
         }
         
-        playingAuthor = .init().then {
+        playingAuthor.do {
             $0.text = "Jazz Hot Cafe"
             $0.font = .systemFont(ofSize: 14, weight: .regular)
             $0.textColor = .gray500
         }
         
-        playButton = .init().then {
+        playButton.do {
             let uiImage = UIImage(named: "Play")
             $0.setImage(uiImage, for: .normal)
         }
@@ -157,10 +153,6 @@ class HomeView: BaseView {
         self.gnbBar.addSubview(logo)
         
         self.stack.addArrangedSubview(banner.view)
-        delegate?.useViewController {
-            $0.addChild(banner)
-            banner.didMove(toParent: $0)
-        }
         
         self.stack.addArrangedSubview(titleContainer)
         
@@ -168,10 +160,6 @@ class HomeView: BaseView {
         
         self.stack.addArrangedSubview(forYouVC.view)
         
-        delegate?.useViewController {
-            forYouVC.didMove(toParent: $0)
-            $0.addChild(forYouVC)
-        }
         
         self.stack.addArrangedSubview(categoryContainer)
         categoryContainer.addArrangedSubview(createCategoryButton(title: "최근 들은", isSelected: true))
@@ -297,6 +285,21 @@ class HomeView: BaseView {
         } else if y <= gnbHeight && showShadow {
             hideGnbShadow()
             showShadow = false
+        }
+    }
+    
+    func configureViewControllers() {
+        if let delegate = delegate {
+            delegate.useViewController {
+                $0.addChild(banner)
+                banner.didMove(toParent: $0)
+            }
+            delegate.useViewController {
+                forYouVC.didMove(toParent: $0)
+                $0.addChild(forYouVC)
+            }
+        } else {
+            print("delegate is nil")
         }
     }
     

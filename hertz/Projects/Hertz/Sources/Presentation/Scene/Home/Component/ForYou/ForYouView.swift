@@ -7,10 +7,6 @@ class ForYouView: BaseView {
     
     let cellIdentifier = "CustomCell"
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    
     override func setUpStyle() {
         super.setUpStyle()
         layout.do {
@@ -24,7 +20,6 @@ class ForYouView: BaseView {
             $0.showsHorizontalScrollIndicator = false
             $0.register(ForYouCell.self, forCellWithReuseIdentifier: cellIdentifier)
         }
-        
     }
     
     override func configure() {
@@ -47,6 +42,9 @@ class ForYouView: BaseView {
     }
     
     func getCell(idx: IndexPath) -> UICollectionViewCell {
+        if collectionView == nil {
+            print("collectionView is nil")
+        }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: idx) as! ForYouCell
         cell.setMusic(music: Music(id: .random(in: 0..<100000),music: "연애운을 팍팍 올려주...", author: "Milo", image: "Logo"))
         return cell

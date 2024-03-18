@@ -4,6 +4,9 @@ class BaseCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setUpStyle()
+        configure()
+        setUpLayout()
     }
     
     func setUpStyle() {}
@@ -12,6 +15,7 @@ class BaseCollectionViewCell: UICollectionViewCell {
     
     func setUpLayout() {}
     
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

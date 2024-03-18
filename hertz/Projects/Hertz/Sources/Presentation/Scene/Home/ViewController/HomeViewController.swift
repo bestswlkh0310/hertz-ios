@@ -13,9 +13,10 @@ class HomeViewController: BaseViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        homeView.configureDelegate(self)
+        homeView.configureViewControllers()
         self.fetchAll()
         self.view = homeView
-        homeView.configureDelegate(self)
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
