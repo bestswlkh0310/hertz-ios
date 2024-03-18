@@ -2,14 +2,14 @@ import UIKit
 import Then
 
 class MusicCell: BaseCollectionViewCell {
-    var container = UIButton()
-    var image = UIImageView()
-    var music = UILabel()
-    var author = UILabel()
+    private var container = UIButton()
+    private var image = UIImageView()
+    private var music = UILabel()
+    private var author = UILabel()
     
-    var musicModel: Music!
+    private var musicModel: Music?
     
-    var onClick: (() -> ())!
+    private var onClick: ((_ tag: Int) -> ())?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -18,23 +18,18 @@ class MusicCell: BaseCollectionViewCell {
     override func setUpStyle() {
         super.setUpStyle()
         image.do {
-            let uiImage = UIImage(named: musicModel.image)
-            $0.image = uiImage
             $0.layer.cornerRadius = 16
         }
         container.do {
             $0.addTarget(self, action: #selector(clickMusic(_:)), for: .touchUpInside)
-//            $0.tag = idx
         }
         music.do {
-            $0.text = musicModel.music
             $0.textColor = .white
             $0.numberOfLines = 0
             $0.sizeToFit()
             $0.font = .systemFont(ofSize: 16, weight: .medium)
         }
         author.do {
-            $0.text = musicModel.author
             $0.textColor = .gray500
             $0.numberOfLines = 0
             $0.sizeToFit()
@@ -75,10 +70,26 @@ class MusicCell: BaseCollectionViewCell {
     
     @objc
     func clickMusic(_ sender: UIButton) {
-        onClick()
+        onClick?(sender.tag)
     }
     
     func setMusic(music: Music) {
         self.musicModel = music
+        
+        let uiImage = UIImage(named: music.image)
+        
+        music.do {
+            self.music.text = $0.music
+            self.image.image = uiImage
+            self.author.text = music.author
+        }
+    }
+    
+    func setOnClick(_ onClick: @escaping (_ tag: Int) -> ()) {
+        self.onClick = onClick
+    }
+    
+    func setTag(idx: Int) {
+        container.tag = idx
     }
 }

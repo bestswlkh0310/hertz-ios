@@ -41,10 +41,17 @@ class HomeView: BaseView {
     
     private let playerHeight: CGFloat = 90
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        musicViewController.onClick = { idx in
+            self.delegate?.clickMusic(tag: idx)
+        }
+    }
+    
     override func setUpStyle() {
         super.setUpStyle()
         self.backgroundColor = .gray800
-        scrollView = .init().then {
+        scrollView.do {
             $0.backgroundColor = .clear
             $0.showsVerticalScrollIndicator = false
         }
@@ -134,39 +141,41 @@ class HomeView: BaseView {
     override func configure() {
         super.configure()
         
-        self.addSubview(scrollView)
-        self.scrollView.addSubview(stack)
+        addSubview(scrollView)
+        scrollView.addSubview(stack)
         
-        self.addSubview(gnbBar)
-        self.addSubview(player)
-        self.player.addSubview(playingImage)
-        self.player.addSubview(playingTitle)
-        self.player.addSubview(playingAuthor)
-        self.player.addSubview(playButton)
+        bringSubviewToFront(gnbBar)
+        bringSubviewToFront(player)
+        addSubviews(gnbBar,
+                    player)
         
-        self.gnbBar.addSubview(logo)
+        player.addSubviews(playingImage,
+                    playingTitle,
+                    playingAuthor,
+                    playButton)
         
-        self.stack.addArrangedSubview(banner.view)
-        self.stack.addArrangedSubview(titleContainer)
+        gnbBar.addSubview(logo)
         
-        self.titleContainer.addSubview(title1)
+        stack.addArrangedSubviews(banner.view,
+                                  titleContainer)
         
-        self.stack.addArrangedSubview(forYouVC.view)
-        self.stack.addArrangedSubview(categoryContainer)
+        titleContainer.addSubview(title1)
+        
+        stack.addArrangedSubviews(forYouVC.view,
+                                  categoryContainer)
         
         categoryContainer.addArrangedSubview(createCategoryButton(title: "최근 들은", isSelected: true))
         categoryContainer.addArrangedSubview(createCategoryButton(title: "인기 있는"))
         categoryContainer.addArrangedSubview(createCategoryButton(title: "찜"))
         
-        self.stack.addArrangedSubview(musicViewController.view)
+        stack.addArrangedSubview(musicViewController.view)
     }
     
     override func setUpLayout() {
         super.setUpLayout()
         
         scrollView.snp.makeConstraints { make in
-            make.top.bottom.equalTo(layoutMarginsGuide)
-            make.leading.trailing.equalTo(self)
+            make.edges.equalTo(safeAreaLayoutGuide)
         }
         
         stack.snp.makeConstraints { make in
@@ -175,8 +184,7 @@ class HomeView: BaseView {
         }
         
         gnbBar.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.leading.trailing.equalTo(self)
+            make.leading.trailing.equalTo(stack)
             make.height.equalTo(gnbHeight)
         }
         
@@ -186,14 +194,14 @@ class HomeView: BaseView {
         }
         
         banner.view.snp.makeConstraints { make in
-            make.top.equalTo(scrollView.contentLayoutGuide).offset(48)
-            make.leading.trailing.equalTo(self)
+            make.top.equalTo(48)
+            make.leading.trailing.equalTo(stack)
             make.height.equalTo(72)
         }
         
         titleContainer.snp.makeConstraints { make in
             make.top.equalTo(banner.view.snp.bottom).offset(24)
-            make.leading.trailing.equalTo(scrollView)
+            make.leading.trailing.equalTo(stack)
             make.height.equalTo(48)
         }
         
@@ -205,20 +213,18 @@ class HomeView: BaseView {
         forYouVC.view.snp.makeConstraints { make in
             make.height.equalTo(202)
             make.top.equalTo(titleContainer.snp.bottom)
-            make.bottom.equalTo(categoryContainer.snp.top).offset(-24)
-            make.leading.trailing.equalTo(self)
+            make.leading.trailing.equalTo(stack)
         }
         
         categoryContainer.snp.makeConstraints { make in
-            make.top.equalTo(forYouVC.view.snp.bottom)
             make.leading.equalTo(stack).offset(28)
             make.height.equalTo(48)
         }
         
         musicViewController.view.snp.makeConstraints { make in
             make.top.equalTo(categoryContainer.snp.bottom)
-            make.leading.equalTo(stack).offset(24)
-            make.trailing.equalTo(stack).offset(-24)
+            make.leading.trailing.equalTo(stack)
+            make.bottom.equalTo(self)
         }
         
         player.snp.makeConstraints { make in

@@ -10,16 +10,14 @@ class MusicView: BaseView {
     override func setUpStyle() {
         super.setUpStyle()
         layout.do {
-            $0.minimumInteritemSpacing = 16
             $0.scrollDirection = .vertical
-            $0.sectionInset = .init(top: 0, left: 0, bottom: 0, right: 0)
         }
         
         collectionView = .init(frame: .zero, collectionViewLayout: layout).then {
             $0.backgroundColor = .init(0, alpha: 0)
-            $0.showsHorizontalScrollIndicator = false
-//            $0.register(MusicCell.self, forCellWithReuseIdentifier: cellIdentifier)
-            $0.isUserInteractionEnabled = false
+            $0.showsVerticalScrollIndicator = false
+            $0.register(MusicCell.self, forCellWithReuseIdentifier: cellIdentifier)
+//            $0.isUserInteractionEnabled = false
         }
     }
     

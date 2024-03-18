@@ -2,10 +2,10 @@ import UIKit
 
 class ForYouView: BaseView {
     
-    var collectionView: UICollectionView!
-    var layout = UICollectionViewFlowLayout()
+    private var collectionView: UICollectionView!
+    private var layout = UICollectionViewFlowLayout()
     
-    let cellIdentifier = "CustomCell"
+    private let cellIdentifier = "ForYouCell"
     
     override func setUpStyle() {
         super.setUpStyle()

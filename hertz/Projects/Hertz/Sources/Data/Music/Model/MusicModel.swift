@@ -1,4 +1,6 @@
-struct Music: Hashable {
+import Then
+
+struct Music: Hashable, Then {
     var id: Int
     var music: String
     var author: String

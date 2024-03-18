@@ -29,11 +29,6 @@ class HomeViewController: BaseViewController, UIScrollViewDelegate {
         }
     }
     
-    @objc func clickMusic(_ sender: UIButton) {
-        print("clicked")
-        self.clickMusic(tag: sender.tag)
-    }
-    
     func navigateDetail(music: Music) {
         let detailVC = DetailViewController()
         detailVC.music = music
@@ -55,7 +50,6 @@ extension HomeViewController: HomeDelegate {
         Task {
             do {
                 let musics = try await MusicAPI.getMusics()
-                self.musics = musics
                 DispatchQueue.main.async {
                     self.musics = musics
                 }
@@ -66,6 +60,6 @@ extension HomeViewController: HomeDelegate {
     }
     
     func clickMusic(tag: Int) {
-        navigateDetail(music: self.musics[tag])
+        navigateDetail(music: musics[tag])
     }
 }
