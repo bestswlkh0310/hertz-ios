@@ -1,3 +1,3 @@
 struct Constant {
-    static let baseUrl = "http://172.30.1.85:8080/api/v1"
+    static let baseUrl = "http://10.80.161.222:8080/api/v1"
 }

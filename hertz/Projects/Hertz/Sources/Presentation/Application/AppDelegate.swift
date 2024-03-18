@@ -2,7 +2,7 @@ import UIKit
 import AVKit
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
     var window: UIWindow?
     
@@ -14,10 +14,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = UINavigationController(rootViewController: HomeVC())
         window?.makeKeyAndVisible()
         
+        if let userInfo = launchOptions?[.url] as? [AnyHashable: Any] {
+            print(userInfo)
+        }
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
+            print("AVAudio Setting loaded")
         } catch {
+            print("AVAudio Setting error")
             debugPrint(error)
         }
         return true

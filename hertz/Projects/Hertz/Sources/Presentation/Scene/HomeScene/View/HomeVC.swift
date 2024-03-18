@@ -11,7 +11,7 @@ import UIKit
 import SwiftUI
 import SnapKit
 
-class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
+class HomeVC: BaseViewController, UIScrollViewDelegate, HomeDelegate {
     
     override var isNavigationBarHidden: Bool { true }
     
@@ -57,8 +57,13 @@ class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupScroll()
+        
         homePresenter.setDelegate(delegate: self)
+        setUpStyle()
+        configure()
+        setUpLayout()
+        setupScroll()
+        homePresenter.fetchAll()
     }
     
     func setupScroll() {
@@ -66,7 +71,7 @@ class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
         scrollView.addObserver(self, forKeyPath: "contentOffset", options:. new, context: nil)
     }
     
-    override func setUpStyle() {
+    func setUpStyle() {
         self.view.backgroundColor = .gray800
         scrollView = .init().then {
             $0.backgroundColor = .clear
@@ -159,7 +164,7 @@ class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
         }
     }
     
-    override func configure() {
+    func configure() {
         
         
         self.view.addSubview(scrollView)
@@ -194,7 +199,7 @@ class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
         self.stack.addArrangedSubview(musicContainer)
     }
     
-    override func setUpLayout() {
+    func setUpLayout() {
         
         scrollView.snp.makeConstraints { make in
             make.top.bottom.equalTo(view.layoutMarginsGuide)
@@ -384,7 +389,7 @@ class HomeVC: BaseVC, UIScrollViewDelegate, HomeDelegate {
     }
     
     func navigateDetail(music: Music) {
-        let detailVC = DetailVC()
+        let detailVC = DetailViewController()
         detailVC.music = music
         self.navigationController?.pushViewController(detailVC, animated: true)
     }

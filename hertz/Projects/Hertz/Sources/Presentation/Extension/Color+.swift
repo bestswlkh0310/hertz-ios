@@ -1,8 +1,6 @@
 import SwiftUI
 
 extension Color {
-    
-    // hex to color
     init(_ hex: UInt, alpha: Double = 1) {
         self.init(
             .sRGB,
@@ -13,3 +11,4 @@ extension Color {
         )
     }
 }
+
