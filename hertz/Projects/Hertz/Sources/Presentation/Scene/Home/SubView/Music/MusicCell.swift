@@ -9,11 +9,7 @@ class MusicCell: BaseCollectionViewCell {
     
     private var musicModel: Music?
     
-    private var onClick: ((_ tag: Int) -> ())?
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
+    var onClick: ((_ tag: Int) -> ())?
     
     override func setUpStyle() {
         super.setUpStyle()
@@ -85,9 +81,6 @@ class MusicCell: BaseCollectionViewCell {
         }
     }
     
-    func setOnClick(_ onClick: @escaping (_ tag: Int) -> ()) {
-        self.onClick = onClick
-    }
     
     func setTag(idx: Int) {
         container.tag = idx

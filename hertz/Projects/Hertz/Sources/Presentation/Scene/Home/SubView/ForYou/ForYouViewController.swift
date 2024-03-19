@@ -10,7 +10,12 @@ class ForYouViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view = forYouView
-        forYouView.configureCollectionView(dataSource: self, delegate: self)
+        
+        // MARK: configure
+        forYouView.collectionView.do {
+            $0.dataSource = self
+            $0.delegate = self
+        }
     }
 }
 
@@ -21,8 +26,8 @@ extension ForYouViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = forYouView.getCell(idx: indexPath)
-
+        let cell = forYouView.collectionView.dequeueReusableCell(withReuseIdentifier: forYouView.cellIdentifier, for: indexPath) as! ForYouCell
+        cell.setMusic(music: Music(id: .random(in: 0..<100000),music: "연애운을 팍팍 올려주...", author: "Milo", image: "Logo"))
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

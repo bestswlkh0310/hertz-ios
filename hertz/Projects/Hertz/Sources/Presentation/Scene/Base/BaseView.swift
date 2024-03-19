@@ -6,7 +6,7 @@ class BaseView: UIView {
         super.init(frame: frame)
         
         setUpStyle()
-        configure()
+        configureUI()
         setUpLayout()
     }
     
@@ -19,7 +19,7 @@ class BaseView: UIView {
         backgroundColor = .gray800
     }
     
-    func configure() {}
+    func configureUI() {}
     
     func setUpLayout() {}
 }

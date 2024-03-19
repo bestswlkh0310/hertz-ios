@@ -3,6 +3,10 @@ import Then
 import SnapKit
 import AVKit
 
+protocol DetailDelegate: NSObject {
+    
+}
+
 class DetailViewController: BaseViewController, UINavigationControllerDelegate, AVAudioPlayerDelegate {
     var music: Music!
     
@@ -25,15 +29,22 @@ class DetailViewController: BaseViewController, UINavigationControllerDelegate, 
         super.viewDidLoad()
         self.title = "재생중" // TODO: rm dummy
         self.view = detailView
+        
+        // MARK: configure
         navigationController?.delegate = self
-        detailView.setDelegate(self)
+        detailView.delegate = self
         configureNavigationController()
+        setAddTarget()
     }
     
     func configureNavigationController() {
         guard let navigationController = self.navigationController else { return }
-        detailView.configureNavigation(navigationController)
-        navigationController.interactivePopGestureRecognizer?.delegate = self
+        navigationController.do {
+            $0.navigationBar.titleTextAttributes = [
+                .font: UIFont.boldSystemFont(ofSize: 16)
+            ]
+            $0.interactivePopGestureRecognizer?.delegate = self
+        }
         detailView.configureNavigationItem(navigationItem)
     }
     
@@ -42,8 +53,14 @@ class DetailViewController: BaseViewController, UINavigationControllerDelegate, 
         fetchMusic(id: music.id)
     }
     
-    func clickStartButton() {
-        handleClickStart()
+    func setAddTarget() {
+        detailView.slider.addTarget(self, action: #selector(sliderChanded), for: .touchUpInside)
+        
+        detailView.backButton.do {
+            $0.action = #selector(backButtonTapped)
+            $0.target = self
+        }
+        detailView.startButton.addTarget(self, action: #selector(handleClickStart), for: .touchUpInside)
     }
     
     func fetchedMusic(url: URL) {
@@ -53,14 +70,14 @@ class DetailViewController: BaseViewController, UINavigationControllerDelegate, 
         let c = url.musicDate?.components
         if let m = c?.minute,
            let s = c?.second {
-            detailView.updateStartTimeText("0:00")
-            detailView.updateEndTimeText(.init(format: "%d:%02d", arguments: [m, s]))
+            detailView.startTime.text = "0:00"
+            detailView.endTime.text = .init(format: "%d:%02d", arguments: [m, s])
         }
     }
 
     func playMusic(url: URL) {
         do {
-            detailView.updateStartButtonImage(pauseIcon)
+            detailView.startButton.setImage(pauseIcon, for: .normal)
             print("play...")
             print(url.absoluteURL)
             audioPlayer = try AVAudioPlayer(contentsOf: url).then {
@@ -82,7 +99,7 @@ class DetailViewController: BaseViewController, UINavigationControllerDelegate, 
     
     func stopMusic(url: URL) {
         // TODO: Change Icon
-        detailView.updateStartButtonImage(playIcon)
+        detailView.startButton.setImage(playIcon, for: .normal)
         print("\(#function) - stop music")
         if let audioPlayer = audioPlayer {
             audioPlayer.pause()
@@ -100,9 +117,9 @@ class DetailViewController: BaseViewController, UINavigationControllerDelegate, 
         let c = Date(timeIntervalSince1970: currentTime).components
         if let m = c.minute,
            let s = c.second {
-            detailView.updateStartTimeText(.init(format: "%d:%02d", arguments: [m, s]))
+            detailView.startTime.text = .init(format: "%d:%02d", arguments: [m, s])
             if let totalDate = totalDate {
-                detailView.updateSliderValue(Float(currentTime / totalDate.timeIntervalSince1970))
+                detailView.slider.value = Float(currentTime / totalDate.timeIntervalSince1970)
             }
         }
     }
@@ -133,6 +150,7 @@ extension DetailViewController: DetailDelegate {
         }
     }
     
+    @objc
     func handleClickStart() {
         if let tempUrl = tempUrl {
             DispatchQueue.main.async {
@@ -146,10 +164,12 @@ extension DetailViewController: DetailDelegate {
         }
     }
     
+    @objc
     func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
     
+    @objc
     func sliderChanded(_ sender: UISlider) {
         guard let audioPlayer = audioPlayer else { return }
         audioPlayer.currentTime = (totalDate?.timeIntervalSince1970 ?? 0) * Double(sender.value)

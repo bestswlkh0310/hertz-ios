@@ -3,44 +3,36 @@ import AVKit
 
 class DetailView: BaseView {
     
-    private var backButton = UIBarButtonItem()
+    var backButton = UIBarButtonItem()
     
-    private var playIcon = UIImage(named: "Play")!.resizeImage(targetSize: .init(width: 84, height: 64))
-    private var pauseIcon = UIImage(named: "Pause")!.resizeImage(targetSize: .init(width: 84, height: 64))
+    var playIcon = UIImage(named: "Play")!.resizeImage(targetSize: .init(width: 84, height: 64))
+    var pauseIcon = UIImage(named: "Pause")!.resizeImage(targetSize: .init(width: 84, height: 64))
     
-    private var image = UIImageView()
+    var image = UIImageView()
     
-    private var infoStack = UIStackView()
+    var infoStack = UIStackView()
     
-    private var titleLabel = UILabel()
+    var titleLabel = UILabel()
     
-    private var author = UILabel()
+    var author = UILabel()
     
-    private var slider = UISlider()
+    var slider = UISlider()
     
-    private var progressObserver: NSKeyValueObservation!
+//    var progressObserver: NSKeyValueObservation!
     
-    private var timeStack = UIStackView()
+    var timeStack = UIStackView()
     
-    private var startTime = UILabel()
+    var startTime = UILabel()
     
-    private var endTime = UILabel()
+    var endTime = UILabel()
     
-    private var startButton = UIButton()
+    var startButton = UIButton()
     
-    private var beforeButton = UIButton()
+    var beforeButton = UIButton()
     
-    private var afterButton = UIButton()
+    var afterButton = UIButton()
     
-    private var delegate: DetailDelegate!
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    
-    func setDelegate(_ delegate: DetailDelegate) {
-        self.delegate = delegate
-    }
+    var delegate: DetailDelegate!
     
     override func setUpStyle() {
         super.setUpStyle()
@@ -74,7 +66,6 @@ class DetailView: BaseView {
             $0.maximumTrackTintColor = .gray700
             $0.thumbTintColor = .white
             let thumb = UIImage(named: "Thumb")?.resizeImage(targetSize: .init(width: 14, height: 14))
-            $0.addTarget(self, action: #selector(sliderChanded), for: .touchUpInside)
             $0.setThumbImage(thumb, for: .normal)
         }
         
@@ -99,9 +90,6 @@ class DetailView: BaseView {
         startButton.do {
             let uiImage = playIcon
             $0.setImage(uiImage, for: .normal)
-            $0.addAction {
-                self.delegate.clickStartButton()
-            }
         }
         
         beforeButton.do {
@@ -114,22 +102,18 @@ class DetailView: BaseView {
             $0.setImage(uiImage, for: .normal)
         }
         
-        backButton = .init(title: "<", style: .plain, target: self, action: #selector(backButtonTapped))
+        backButton.do {
+            $0.title = "<"
+            $0.style = .plain
+        }
     }
     
-    override func configure() {
-        super.configure()
-        self.addSubview(image)
-        self.addSubview(infoStack)
-        [titleLabel, author, slider, timeStack].forEach {
-            infoStack.addArrangedSubview($0)
-        }
-        [startTime, endTime].forEach {
-            timeStack.addArrangedSubview($0)
-        }
-        self.addSubview(startButton)
-        self.addSubview(beforeButton)
-        self.addSubview(afterButton)
+    override func configureUI() {
+        super.configureUI()
+        addSubviews(image, infoStack)
+        infoStack.addArrangedSubviews(titleLabel, author, slider, timeStack)
+        timeStack.addArrangedSubviews(startTime, endTime)
+        addSubviews(beforeButton, startButton, afterButton)
     }
     
     override func setUpLayout() {
@@ -187,36 +171,6 @@ class DetailView: BaseView {
             make.centerY.equalTo(startButton)
             make.leading.equalTo(startButton.snp.trailing).offset(48)
         }
-    }
-    
-    @objc func sliderChanded(_ sender: UISlider) {
-        delegate.sliderChanded(sender)
-    }
-    
-    @objc func backButtonTapped() {
-        delegate.backButtonTapped()
-    }
-    
-    func updateStartTimeText(_ text: String) {
-        self.startTime.text = text
-    }
-    
-    func updateEndTimeText(_ text: String) {
-        self.endTime.text = text
-    }
-    
-    func updateStartButtonImage(_ image: UIImage) {
-        self.startButton.setImage(image, for: .normal)
-    }
-    
-    func updateSliderValue(_ value: Float) {
-        slider.value = value
-    }
-    
-    func configureNavigation(_ navigationController: UINavigationController) {
-        navigationController.navigationBar.titleTextAttributes = [
-            .font: UIFont.boldSystemFont(ofSize: 16)
-        ]
     }
     
     func configureNavigationItem(_ navigationItem: UINavigationItem) {

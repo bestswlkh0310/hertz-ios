@@ -3,29 +3,71 @@ import UIKit
 import SwiftUI
 import SnapKit
 
+protocol HomeDelegate: NSObjectProtocol {
+    
+    func clickMusic(tag: Int)
+}
+
 class HomeViewController: BaseViewController, UIScrollViewDelegate {
     
     override var isNavigationBarHidden: Bool { true }
     
-    private var musics: [Music] = [] {
+    var showShadow = false {
         didSet {
-            homeView.updateMusics(musics: musics)
+            if showShadow {
+                homeView.gnbBar.layer.shadowOpacity = 0.16
+            } else {
+                homeView.gnbBar.layer.shadowOpacity = 0.0
+            }
         }
     }
     
+//    private var musics: [Music] = [] {
+//        didSet {
+//            homeView.musicViewController.musics = musics
+//        }
+//    }
+    
     private var homeView = HomeView()
     
+    override func loadView() {
+        super.loadView()
+        view = homeView
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        homeView.configureDelegate(self)
-        homeView.configureViewControllers()
+        
+        // MARK: configure
+        homeView.delegate = self
+        configureChildVC()
+        configureScrollView()
+        configureMusicCellTapped()
+        
+        // MARK: fetch
         self.fetchAll()
-        self.view = homeView
     }
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if keyPath == "contentOffset" {
-            homeView.handleScrollHeight()
+    func configureChildVC() {
+        addChild(homeView.banner)
+        homeView.banner.didMove(toParent: self)
+        
+        addChild(homeView.forYouVC)
+        homeView.forYouVC.didMove(toParent: self)
+        
+        addChild(homeView.musicViewController)
+        homeView.musicViewController.didMove(toParent: self)
+    }
+    
+    func configureScrollView() {
+        homeView.scrollView.do {
+            $0.addObserver(self, forKeyPath: "contentOffset", options:. new, context: nil)
+            $0.delegate = self
+        }
+    }
+    
+    func configureMusicCellTapped() {
+        homeView.musicViewController.onClick = {
+            self.clickMusic(tag: $0)
         }
     }
     
@@ -35,31 +77,45 @@ class HomeViewController: BaseViewController, UIScrollViewDelegate {
         self.navigationController?.pushViewController(detailVC, animated: true)
     }
     
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "contentOffset" {
+            let y = homeView.scrollView.contentOffset.y
+            if y > homeView.gnbHeight && !showShadow {
+                showShadow = true
+            } else if y <= homeView.gnbHeight && showShadow {
+                showShadow = false
+            }
+        }
+    }
+    
     deinit {
         homeView.removeObserver(self, forKeyPath: "contentOffset")
-        homeView.configureScrollView(observer: self, delegate: self)
+        homeView.scrollView.removeObserver(self, forKeyPath: "contentOffset")
     }
 }
 
-extension HomeViewController: HomeDelegate {
-    func useViewController(use: (UIViewController) -> ()) {
-        use(self)
-    }
+// MARK: http service
+extension HomeViewController {
     
     func fetchAll() {
         Task {
             do {
                 let musics = try await MusicAPI.getMusics()
                 DispatchQueue.main.async {
-                    self.musics = musics
+                    self.homeView.musicViewController.musics = musics
                 }
             } catch {
                 debugPrint(error)
             }
         }
     }
+}
+
+// MARK: delegate
+extension HomeViewController: HomeDelegate {
     
     func clickMusic(tag: Int) {
+        let musics = homeView.musicViewController.musics
         navigateDetail(music: musics[tag])
     }
 }

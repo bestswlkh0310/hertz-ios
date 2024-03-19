@@ -2,7 +2,11 @@ import UIKit
 
 class MusicViewController: BaseViewController {
     
-    private var musics: [Music] = []
+    var musics: [Music] = [] {
+        didSet {
+            musicView.collectionView.reloadData()
+        }
+    }
     
     private var musicView = MusicView()
     
@@ -11,12 +15,12 @@ class MusicViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view = musicView
-        musicView.configureCollectionView(dataSource: self, delegate: self)
-    }
-    
-    func updateMusics(musics: [Music]) {
-        self.musics = musics
-        musicView.reloadCollectionView()
+        
+        // MARK: configure
+        musicView.collectionView.do {
+            $0.delegate = self
+            $0.dataSource = self
+        }
     }
 }
 
@@ -26,12 +30,11 @@ extension MusicViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = musicView.getCell(idx: indexPath)
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: musicView.cellIdentifier, for: indexPath) as! MusicCell
         cell.setMusic(music: musics[indexPath.item])
         cell.setTag(idx: indexPath.item)
-        if let onClick {
-            cell.setOnClick(onClick)
-        }
+        cell.onClick = onClick
         return cell
     }
     

@@ -3,43 +3,45 @@ import SwiftUI
 
 class HomeView: BaseView {
     
-    private var delegate: HomeDelegate?
+    var delegate: HomeDelegate?
     
-    private var scrollView = UIScrollView()
+    var scrollView = UIScrollView()
     
-    private var stack = UIStackView()
+    var stack = UIStackView()
     
-    private var gnbBar = UIView()
+    var gnbBar = UIView()
     
-    private let gnbHeight: CGFloat = 48
+    let gnbHeight: CGFloat = 48
     
-    private var logo = UIImageView()
+    var logo = UIImageView()
     
-    private var showShadow = false
+    var banner = UIHostingController<BannerView>(rootView: BannerView())
     
-    private var banner = UIHostingController<BannerView>(rootView: BannerView())
+    var titleContainer = UIView()
     
-    private var titleContainer = UIView()
+    var title1 = UILabel()
     
-    private var title1 = UILabel()
+    var forYouVC = ForYouViewController()
     
-    private var forYouVC = ForYouViewController()
+    var categoryContainer = UIStackView()
     
-    private var categoryContainer = UIStackView()
+    var categoryCell1 = CategoryCell()
+    var categoryCell2 = CategoryCell()
+    var categoryCell3 = CategoryCell()
     
-    private var musicViewController = MusicViewController()
+    var musicViewController = MusicViewController()
     
-    private var player = UIView()
+    var player = UIView()
     
-    private var playingImage = UIImageView()
+    var playingImage = UIImageView()
     
-    private var playingTitle = UILabel()
+    var playingTitle = UILabel()
     
-    private var playingAuthor = UILabel()
+    var playingAuthor = UILabel()
     
-    private var playButton = UIButton()
+    var playButton = UIButton()
     
-    private let playerHeight: CGFloat = 90
+    let playerHeight: CGFloat = 90
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -98,6 +100,18 @@ class HomeView: BaseView {
             $0.spacing = 28
         }
         
+        categoryCell1.do {
+            $0.isSelected = true
+            $0.button.setTitle("최근 들은", for: .normal)
+        }
+        
+        categoryCell2.do {
+            $0.button.setTitle("인기 있는", for: .normal)
+        }
+        
+        categoryCell3.do {
+            $0.button.setTitle("찜", for: .normal)
+        }
         musicViewController.do { _ in
             
         }
@@ -138,8 +152,8 @@ class HomeView: BaseView {
         }
     }
     
-    override func configure() {
-        super.configure()
+    override func configureUI() {
+        super.configureUI()
         
         addSubview(scrollView)
         scrollView.addSubview(stack)
@@ -164,9 +178,10 @@ class HomeView: BaseView {
         stack.addArrangedSubviews(forYouVC.view,
                                   categoryContainer)
         
-        categoryContainer.addArrangedSubview(createCategoryButton(title: "최근 들은", isSelected: true))
-        categoryContainer.addArrangedSubview(createCategoryButton(title: "인기 있는"))
-        categoryContainer.addArrangedSubview(createCategoryButton(title: "찜"))
+        
+        categoryContainer.addArrangedSubviews(categoryCell1,
+                                              categoryCell2,
+                                              categoryCell3)
         
         stack.addArrangedSubview(musicViewController.view)
     }
@@ -224,7 +239,7 @@ class HomeView: BaseView {
         musicViewController.view.snp.makeConstraints { make in
             make.top.equalTo(categoryContainer.snp.bottom)
             make.leading.trailing.equalTo(stack)
-            make.bottom.equalTo(self)
+            make.bottom.equalTo(scrollView.frameLayoutGuide)
         }
         
         player.snp.makeConstraints { make in
@@ -252,67 +267,5 @@ class HomeView: BaseView {
             make.top.equalTo(player).offset(23)
             make.trailing.equalTo(self).offset(-18)
         }
-    }
-    
-    func configureDelegate(_ delegate: HomeDelegate) {
-        self.delegate = delegate
-    }
-    
-    func createCategoryButton(title: String, isSelected: Bool = false) -> UIButton {
-        let b = UIButton()
-        b.setTitle(title, for: .normal)
-        let titleColor: UIColor = isSelected ? .white : .gray500
-        b.setTitleColor(titleColor, for: .normal)
-        b.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        return b
-    }
-    
-    func showGnbShadow() {
-        gnbBar.layer.shadowOpacity = 0.16
-    }
-    
-    func hideGnbShadow() {
-        gnbBar.layer.shadowOpacity = 0.0
-    }
-    
-    func handleScrollHeight() {
-        let y = scrollView.contentOffset.y
-        if y > gnbHeight && !showShadow {
-            showGnbShadow()
-            showShadow = true
-        } else if y <= gnbHeight && showShadow {
-            hideGnbShadow()
-            showShadow = false
-        }
-    }
-    
-    func configureViewControllers() {
-        if let delegate = delegate {
-            delegate.useViewController {
-                $0.addChild(banner)
-                banner.didMove(toParent: $0)
-                
-                $0.addChild(forYouVC)
-                forYouVC.didMove(toParent: $0)
-                
-                $0.addChild(musicViewController)
-                musicViewController.didMove(toParent: $0)
-            }
-        } else {
-            print("\(#file) delegate is nil")
-        }
-    }
-    
-    func configureScrollView(observer: NSObject, delegate: UIScrollViewDelegate) {
-        scrollView.addObserver(observer, forKeyPath: "contentOffset", options:. new, context: nil)
-        scrollView.delegate = delegate
-    }
-    
-    func removeScrollViewObserver(_ observer: NSObject, forKeyPath keyPath: String) {
-        scrollView.removeObserver(observer, forKeyPath: keyPath)
-    }
-    
-    func updateMusics(musics: [Music]) {
-        musicViewController.updateMusics(musics: musics)
     }
 }
