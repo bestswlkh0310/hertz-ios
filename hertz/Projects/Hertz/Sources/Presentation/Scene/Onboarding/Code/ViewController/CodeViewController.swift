@@ -1,13 +1,13 @@
 import UIKit
 
-class SignUpViewController: BaseViewController {
+class CodeViewController: BaseViewController {
     
-    let signUpView = SignUpView()
+    let codeView = CodeView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view = signUpView
-        title = "회원가입"
+        view = codeView
+        title = "이메일 인증"
         hideKeyboardWhenTappedAround()
         
         // MARK: configure
@@ -23,24 +23,17 @@ class SignUpViewController: BaseViewController {
     }
     
     func configureAddTarget() {
-        signUpView.signInButton.addTarget(self, action: #selector(navigateSignIn), for: .touchUpInside)
-        signUpView.continueButton.addTarget(self, action: #selector(navigateCode), for: .touchUpInside)
+        
     }
     
     @objc
     func navigateSignIn() {
-        let signInViewController = SignInViewController()
-        navigationController?.pushViewController(signInViewController, animated: true)
-    }
-    
-    @objc
-    func navigateCode() {
         let codeViewController = CodeViewController()
         navigationController?.pushViewController(codeViewController, animated: true)
     }
 }
 
-extension SignUpViewController: UIGestureRecognizerDelegate {
+extension CodeViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
