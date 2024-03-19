@@ -3,8 +3,6 @@ import AVKit
 
 class DetailView: BaseView {
     
-    var backButton = UIBarButtonItem()
-    
     var playIcon = UIImage(named: "Play")!.resizeImage(targetSize: .init(width: 84, height: 64))
     var pauseIcon = UIImage(named: "Pause")!.resizeImage(targetSize: .init(width: 84, height: 64))
     
@@ -101,11 +99,7 @@ class DetailView: BaseView {
             let uiImage = UIImage(named: "Before")?.withHorizontallyFlippedOrientation()
             $0.setImage(uiImage, for: .normal)
         }
-        
-        backButton.do {
-            $0.title = "<"
-            $0.style = .plain
-        }
+
     }
     
     override func configureUI() {
@@ -171,9 +165,5 @@ class DetailView: BaseView {
             make.centerY.equalTo(startButton)
             make.leading.equalTo(startButton.snp.trailing).offset(48)
         }
-    }
-    
-    func configureNavigationItem(_ navigationItem: UINavigationItem) {
-        navigationItem.leftBarButtonItem = backButton
     }
 }

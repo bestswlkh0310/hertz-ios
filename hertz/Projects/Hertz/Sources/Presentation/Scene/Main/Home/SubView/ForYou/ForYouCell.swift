@@ -10,10 +10,6 @@ class ForYouCell: BaseCollectionViewCell {
     
     private var music: Music?
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    
     override func setUpStyle() {
         super.setUpStyle()
         logo.do {

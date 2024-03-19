@@ -1,6 +1,7 @@
 import UIKit
 import Then
 import SnapKit
+import MediaPlayer
 import AVKit
 
 protocol DetailDelegate: NSObject {
@@ -45,7 +46,6 @@ class DetailViewController: BaseViewController, UINavigationControllerDelegate, 
             ]
             $0.interactivePopGestureRecognizer?.delegate = self
         }
-        detailView.configureNavigationItem(navigationItem)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -56,10 +56,6 @@ class DetailViewController: BaseViewController, UINavigationControllerDelegate, 
     func setAddTarget() {
         detailView.slider.addTarget(self, action: #selector(sliderChanded), for: .touchUpInside)
         
-        detailView.backButton.do {
-            $0.action = #selector(backButtonTapped)
-            $0.target = self
-        }
         detailView.startButton.addTarget(self, action: #selector(handleClickStart), for: .touchUpInside)
     }
     
@@ -79,7 +75,6 @@ class DetailViewController: BaseViewController, UINavigationControllerDelegate, 
         do {
             detailView.startButton.setImage(pauseIcon, for: .normal)
             print("play...")
-            print(url.absoluteURL)
             audioPlayer = try AVAudioPlayer(contentsOf: url).then {
                 $0.prepareToPlay()
                 $0.delegate = self
@@ -88,7 +83,6 @@ class DetailViewController: BaseViewController, UINavigationControllerDelegate, 
             }
             
             timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateAudio), userInfo: nil, repeats: true)
-            
             
         } catch {
             print("error...")
@@ -105,10 +99,6 @@ class DetailViewController: BaseViewController, UINavigationControllerDelegate, 
             audioPlayer.pause()
         }
         
-    }
-    
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        navigationController.navigationBar.tintColor = .white
     }
     
     @objc func updateAudio() {
@@ -162,11 +152,6 @@ extension DetailViewController: DetailDelegate {
                 self.isPlaying.toggle()
             }
         }
-    }
-    
-    @objc
-    func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
     }
     
     @objc

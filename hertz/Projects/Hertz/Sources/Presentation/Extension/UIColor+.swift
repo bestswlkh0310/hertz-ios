@@ -24,6 +24,8 @@ extension UIColor {
     static let gray800 = UIColor(0x1D1D1D)
     
     static let shadow = UIColor(0x000000)
+    
+    static let primary500 = UIColor(0x26EA4B)
 }
 
 

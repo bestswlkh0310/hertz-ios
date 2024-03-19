@@ -12,8 +12,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     ) -> Bool {
         UserDefaults.standard.set(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
 
+        if #available(iOS 1.13, *) {
+            return true
+        }
+        
         window = UIWindow()
-        let homeViewController = HomeViewController()
+        let homeViewController = StartViewController()
         let navigationController = UINavigationController(rootViewController: homeViewController)
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()

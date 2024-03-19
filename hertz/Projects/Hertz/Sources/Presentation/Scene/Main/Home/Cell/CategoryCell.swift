@@ -11,11 +11,6 @@ class CategoryCell: BaseView {
         }
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-    }
-    
     override func setUpStyle() {
         super.setUpStyle()
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
