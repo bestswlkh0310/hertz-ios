@@ -1,18 +1,18 @@
 import Moya
 import Foundation
 
-enum UserTarget {
+public enum UserTarget {
     case signUp(_ req: SignUpRequest)
     case signIn(_ req: SignInRequest)
     case refresh(_ refreshToken: String)
 }
 
 extension UserTarget: TargetType {
-    var baseURL: URL {
+    public var baseURL: URL {
         Config.baseURL
     }
     
-    var path: String {
+    public var path: String {
         switch self {
         case .signUp:
             "\(ApiPath.users)/sign-up"
@@ -23,7 +23,7 @@ extension UserTarget: TargetType {
         }
     }
     
-    var method: Moya.Method {
+    public var method: Moya.Method {
         switch self {
         case .signUp:
                 .post
@@ -34,7 +34,7 @@ extension UserTarget: TargetType {
         }
     }
     
-    var task: Moya.Task {
+    public var task: Moya.Task {
         switch self {
         case let .signUp(req):
                 .requestJSONEncodable(req)
@@ -45,7 +45,7 @@ extension UserTarget: TargetType {
         }
     }
     
-    var headers: [String : String]? {
+    public var headers: [String : String]? {
         switch self {
         case .signUp(_):
             nil
@@ -58,7 +58,7 @@ extension UserTarget: TargetType {
         }
     }
     
-    var authorization: Authorization {
+    public var authorization: Authorization {
         switch self {
         case .signUp(_):
                 .unauthorization

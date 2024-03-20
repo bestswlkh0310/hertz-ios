@@ -23,10 +23,8 @@ class HertzTextField: UITextField {
         layer.cornerRadius = 8
         layer.borderWidth = 1
         layer.borderColor = UIColor.gray600.cgColor
-        leftView = .init(frame: .init(x: 0, y: 0, width: 16, height: 0))
-        leftViewMode = .always
-        rightView = .init(frame: .init(x: 0, y: 0, width: 16, height: 0))
-        rightViewMode = .always
+        addLeftPadding(16)
+        addRightPadding(16)
         
         autocorrectionType = .no
         spellCheckingType = .no

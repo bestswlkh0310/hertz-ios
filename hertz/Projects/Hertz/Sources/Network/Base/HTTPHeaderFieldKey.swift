@@ -9,11 +9,11 @@
 import Foundation
 import Moya
 
-enum Authorization {
+public enum Authorization {
     case authorization
     case unauthorization
 }
 
 extension TargetType {
-    var authorization: Authorization { .authorization }
+    public var authorization: Authorization { .authorization }
 }

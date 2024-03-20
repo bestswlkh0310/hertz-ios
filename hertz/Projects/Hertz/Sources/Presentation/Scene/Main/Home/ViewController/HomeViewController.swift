@@ -96,7 +96,7 @@ extension HomeViewController {
     
     func fetchAll() {
         Task {
-            let response = await MusicService.shared.getMusics()
+            let response = await NetworkService.shared.musicService.getMusics()
             switch response {
             case .success(let data):
                 DispatchQueue.main.async {

@@ -124,7 +124,7 @@ extension DetailViewController: DetailDelegate {
     func fetchMusic(id: Int) {
         Task {
             do {
-                let result = await MusicService.shared.getMusic(id: id)
+                let result = await NetworkService.shared.musicService.getMusic(id: id)
                 switch result {
                 case .success(let data):
                     let filename = "playing-music.mp3"

@@ -1,17 +1,17 @@
 import Foundation
 import Moya
 
-enum MusicTarget {
+public enum MusicTarget {
     case musics
     case music(id: Int)
 }
 
 extension MusicTarget: TargetType {
-    var baseURL: URL {
+    public var baseURL: URL {
         Config.baseURL
     }
     
-    var path: String {
+    public var path: String {
         switch self {
         case .musics:
             "\(ApiPath.musics)"
@@ -20,7 +20,7 @@ extension MusicTarget: TargetType {
         }
     }
     
-    var method: Moya.Method {
+    public var method: Moya.Method {
         switch self {
         case .musics: 
                 .get
@@ -29,7 +29,7 @@ extension MusicTarget: TargetType {
         }
     }
     
-    var task: Moya.Task {
+    public var task: Moya.Task {
         switch self {
         case .musics:
                 .requestPlain
@@ -38,11 +38,11 @@ extension MusicTarget: TargetType {
         }
     }
     
-    var headers: [String : String]? {
+    public var headers: [String : String]? {
         nil
     }
     
-    var validationType: ValidationType {
+    public var validationType: ValidationType {
         switch self {
         case .musics:
                 .successCodes

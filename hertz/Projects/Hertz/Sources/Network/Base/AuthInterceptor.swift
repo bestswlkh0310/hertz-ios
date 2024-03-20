@@ -8,24 +8,21 @@
 
 import Foundation
 import Alamofire
+import UIKit
 
 public final class AuthInterceptor: RequestInterceptor {
 
-    static let shared = AuthInterceptor()
-
-    private init() {}
+    private let maxRetryCount: Int = 3
 
     public func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
-        guard urlRequest.url?.absoluteString.hasPrefix(Config.baseURL.absoluteString) == true,
-              let accessToken = UserCache.shared.getToken(for: .accessToken)
+        guard let accessToken = UserCache.shared.getToken(for: .accessToken)
         else {
             completion(.success(urlRequest))
             return
         }
         
         var urlRequest = urlRequest
-        let authorization = "Bearer \(accessToken)"
-        urlRequest.setValue(authorization, forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         print("adator 적용")
         completion(.success(urlRequest))
     }
@@ -38,26 +35,34 @@ public final class AuthInterceptor: RequestInterceptor {
             return
         }
         
-        print("\(#file) - valided refresh request")
-        guard let refreshToken = UserCache.shared.getToken(for: .refreshToken) else {
-            UserCache.shared.deleteTokenAll()
-            completion(.doNotRetryWithError(error))
+        if request.retryCount >= maxRetryCount {
+            completion(.doNotRetry)
             return
         }
-        print("\(#file) - has refreshToken")
         
-        // MARK: refresh
+        guard let refreshToken = UserCache.shared.getToken(for: .refreshToken) else {
+            UserCache.shared.deleteTokenAll()
+            completion(.doNotRetry)
+            return
+        }
+        
         Task {
-            let result = await UserService.shared.refresh(refreshToken: refreshToken)
+            let result = await NetworkService.shared.userService.refresh(refreshToken: refreshToken)
             switch result {
             case .success(let response):
                 let accessToken = response.data.accessToken
                 UserCache.shared.saveToken(accessToken, for: .accessToken)
                 completion(.retry)
             default:
-                UserCache.shared.deleteTokenAll()
-                completion(.doNotRetryWithError(error))
+                logout()
+                completion(.doNotRetry)
             }
         }
+    }
+    
+    func logout() {
+        UserCache.shared.deleteTokenAll()
+        let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate
+        sceneDelegate.window?.rootViewController = UINavigationController(rootViewController: StartViewController())
     }
 }

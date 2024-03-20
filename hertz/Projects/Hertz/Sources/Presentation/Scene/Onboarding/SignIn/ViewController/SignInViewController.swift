@@ -39,7 +39,7 @@ class SignInViewController: BaseViewController {
         guard let password = signInView.passwordTextField.text else { return }
         let request = SignInRequest(username: email, password: password)
         Task {
-            let result = await UserService.shared.signIn(req: request)
+            let result = await NetworkService.shared.userService.signIn(req: request)
             switch result {
             case .success(let response):
                 // TODO: handle token
