@@ -1,11 +1,17 @@
-struct MusicResponse: Decodable {
+public struct MusicResponse: Decodable {
     let id: Int
     let music: String
     let author: String
+    
+    public init(id: Int, music: String, author: String) {
+        self.id = id
+        self.music = music
+        self.author = author
+    }
 }
 
 extension MusicResponse {
-    func toDomain() -> Music {
+    public func toDomain() -> Music {
         Music(id: id,
               music: music,
               author: author,

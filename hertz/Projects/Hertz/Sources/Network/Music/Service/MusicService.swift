@@ -1,20 +1,16 @@
 import Foundation
 
-class MusicService {
+public class MusicService {
     
-    static let session = URLSession.shared
-    static let decoder = JSONDecoder()
+    private init() {}
     
-    static func getMusics() async throws -> [Music] {
-        let url = URL(string: "\(Config.baseURL)/musics")!
-        let (data, _) = try await session.data(from: url)
-        let response = try decoder.decode([MusicResponse].self, from: data)
-        return response.map { $0.toDomain() }
+    public static let shared = MusicService()
+    
+    public func getMusics() async -> NetworkResult<BaseResponse<[MusicResponse]>> {
+        return await HttpClient.shared.request(MusicTarget.musics, res: BaseResponse<[MusicResponse]>.self)
     }
     
-    static func getMusic(id: Int) async throws -> Data {
-        let url = URL(string: "\(Config.baseURL)/musics/\(id)")!
-        let (data, _) = try await session.data(from: url)
-        return data
+    public func getMusic(id: Int) async -> NetworkResult<Data> {
+        return await HttpClient.shared.request(MusicTarget.music(id: id), res: Data.self)
     }
 }

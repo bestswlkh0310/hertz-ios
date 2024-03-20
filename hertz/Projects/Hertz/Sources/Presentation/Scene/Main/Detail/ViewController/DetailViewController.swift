@@ -124,16 +124,23 @@ extension DetailViewController: DetailDelegate {
     func fetchMusic(id: Int) {
         Task {
             do {
-                let data = try await MusicService.getMusic(id: id)
-                let filename = "playing-music.mp3"
-                let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                let fileURL = documentsURL.appendingPathComponent(filename)
-                try data.write(to: fileURL)
-                print("\(#function) \(fileURL)")
-                self.tempUrl = fileURL
-                DispatchQueue.main.async {
-                    self.fetchedMusic(url: fileURL)
+                let result = await MusicService.shared.getMusic(id: id)
+                switch result {
+                case .success(let data):
+                    let filename = "playing-music.mp3"
+                    let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                    let fileURL = documentsURL.appendingPathComponent(filename)
+                    try data.write(to: fileURL)
+                    print("\(#function) \(fileURL)")
+                    self.tempUrl = fileURL
+                    DispatchQueue.main.async {
+                        self.fetchedMusic(url: fileURL)
+                    }
+                default:
+                    // TODO: handle error
+                    break
                 }
+                
             } catch {
                 debugPrint(error)
             }

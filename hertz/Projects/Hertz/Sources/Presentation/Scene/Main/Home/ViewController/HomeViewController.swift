@@ -99,13 +99,15 @@ extension HomeViewController {
     
     func fetchAll() {
         Task {
-            do {
-                let musics = try await MusicService.getMusics()
+            let response = await MusicService.shared.getMusics()
+            switch response {
+            case .success(let data):
                 DispatchQueue.main.async {
-                    self.homeView.musicViewController.musics = musics
+                    self.homeView.musicViewController.musics = data.data.map { $0.toDomain() }
                 }
-            } catch {
-                debugPrint(error)
+            default:
+                print(response)
+                break
             }
         }
     }
