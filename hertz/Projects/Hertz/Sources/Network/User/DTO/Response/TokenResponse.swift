@@ -1,6 +1,6 @@
 import Foundation
 
-struct TokenResponse: Decodable {
+public struct TokenResponse: Decodable {
     let accessToken: String
     let refreshToken: String
 }

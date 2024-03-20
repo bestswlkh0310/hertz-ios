@@ -29,7 +29,8 @@ class HttpClient {
     private func isValidData<M: Decodable>(data: Data, type: M.Type) -> NetworkResult<M> {
         let decoder = JSONDecoder()
         do {
-            let members = try decoder.decode(M.self, from: data)
+            let decodedData = try decoder.decode(M.self, from: data)
+            return .success(decodedData)
         } catch let DecodingError.dataCorrupted(context) {
             print(context)
         } catch let DecodingError.keyNotFound(key, context) {
@@ -45,12 +46,12 @@ class HttpClient {
             print("error: ", error)
             print(error.localizedDescription)
         }
-        guard let decodedData = try? decoder.decode(M.self, from: data) else {
+        guard let decodedData = try? decoder.decode(ErrorResponse.self, from: data) else {
             print("json decoded failed !")
             return .pathErr
         }
         
-        return .success(decodedData)
+        return .requestErr(decodedData)
     }
     
     private func request<T: TargetType>(_ target: T) async throws -> Moya.Response {

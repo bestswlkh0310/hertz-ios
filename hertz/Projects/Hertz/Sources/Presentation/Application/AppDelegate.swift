@@ -12,9 +12,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     ) -> Bool {
         UserDefaults.standard.set(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
 
-        if #available(iOS 1.13, *) {
-            return true
-        }
+//        if #available(iOS 1.13, *) {
+//            return true
+//        }
         
         window = UIWindow()
         let homeViewController = StartViewController()
