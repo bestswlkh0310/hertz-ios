@@ -7,7 +7,8 @@ let project = Project.makeModule(
     product: .app,
     dependencies: [
         .external(name: "SnapKit"),
-        .external(name: "Then")
+        .external(name: "Then"),
+        .external(name: "Moya")
     ],
     resources: ["Resources/**"],
     infoPlist: .file(path: "Support/Info.plist")

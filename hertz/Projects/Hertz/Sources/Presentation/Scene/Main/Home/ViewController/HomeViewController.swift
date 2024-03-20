@@ -100,7 +100,7 @@ extension HomeViewController {
     func fetchAll() {
         Task {
             do {
-                let musics = try await MusicAPI.getMusics()
+                let musics = try await MusicService.getMusics()
                 DispatchQueue.main.async {
                     self.homeView.musicViewController.musics = musics
                 }

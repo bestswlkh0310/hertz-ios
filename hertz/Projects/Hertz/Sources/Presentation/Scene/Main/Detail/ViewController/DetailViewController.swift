@@ -124,7 +124,7 @@ extension DetailViewController: DetailDelegate {
     func fetchMusic(id: Int) {
         Task {
             do {
-                let data = try await MusicAPI.getMusic(id: id)
+                let data = try await MusicService.getMusic(id: id)
                 let filename = "playing-music.mp3"
                 let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 let fileURL = documentsURL.appendingPathComponent(filename)
