@@ -6,6 +6,9 @@ import SnapKit
 protocol HomeDelegate: NSObjectProtocol {
     
     func clickMusic(tag: Int)
+    
+    func updateMusicContainerHeight(count: Int)
+    
 }
 
 class HomeViewController: BaseViewController, UIScrollViewDelegate {
@@ -21,12 +24,6 @@ class HomeViewController: BaseViewController, UIScrollViewDelegate {
             }
         }
     }
-    
-//    private var musics: [Music] = [] {
-//        didSet {
-//            homeView.musicViewController.musics = musics
-//        }
-//    }
     
     private var homeView = HomeView()
     
@@ -115,9 +112,13 @@ extension HomeViewController {
 
 // MARK: delegate
 extension HomeViewController: HomeDelegate {
-    
     func clickMusic(tag: Int) {
         let musics = homeView.musicViewController.musics
         navigateDetail(music: musics[tag])
     }
+    func updateMusicContainerHeight(count: Int) {
+        homeView.updateMusicContainerHeight(count: count)
+    }
+    
+    
 }

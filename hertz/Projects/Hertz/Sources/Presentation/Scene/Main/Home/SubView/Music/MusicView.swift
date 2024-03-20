@@ -17,6 +17,7 @@ class MusicView: BaseView {
             $0.backgroundColor = .init(0, alpha: 0)
             $0.showsVerticalScrollIndicator = false
             $0.register(MusicCell.self, forCellWithReuseIdentifier: cellIdentifier)
+            $0.isUserInteractionEnabled = false
         }
     }
     

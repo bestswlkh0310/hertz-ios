@@ -52,6 +52,8 @@ public final class AuthInterceptor: RequestInterceptor {
                 UserCache.shared.saveToken(accessToken, for: .accessToken)
                 completion(.retry)
             default:
+                UserCache.shared.saveToken(nil, for: .accessToken)
+                UserCache.shared.saveToken(nil, for: .refreshToken)
                 completion(.doNotRetryWithError(error))
             }
         }

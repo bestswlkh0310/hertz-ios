@@ -14,7 +14,7 @@ public class UserCache {
     
     public static let shared = UserCache()
     
-    public func saveToken(_ token: String, for type: JwtType) {
+    public func saveToken(_ token: String?, for type: JwtType) {
         UserDefaults.standard.setValue(token, forKey: type.rawValue)
     }
     

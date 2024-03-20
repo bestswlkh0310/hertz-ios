@@ -5,11 +5,13 @@ class MusicViewController: BaseViewController {
     var musics: [Music] = [] {
         didSet {
             musicView.collectionView.reloadData()
+            updateMusicContainerHeight?(musics.count)
         }
     }
     
     private var musicView = MusicView()
     
+    var updateMusicContainerHeight: ((Int) -> ())?
     var onClick: ((_ tag: Int) -> ())?
     
     override func viewDidLoad() {

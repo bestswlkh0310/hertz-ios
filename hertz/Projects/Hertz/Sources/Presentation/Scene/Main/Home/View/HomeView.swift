@@ -45,10 +45,9 @@ class HomeView: BaseView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        musicViewController.onClick = { idx in
-            self.delegate?.clickMusic(tag: idx)
-        }
+        configureCallback()
     }
+    
     
     override func setUpStyle() {
         super.setUpStyle()
@@ -239,7 +238,6 @@ class HomeView: BaseView {
         musicViewController.view.snp.makeConstraints { make in
             make.top.equalTo(categoryContainer.snp.bottom)
             make.leading.trailing.equalTo(stack)
-            make.bottom.equalTo(scrollView.frameLayoutGuide)
         }
         
         player.snp.makeConstraints { make in
@@ -266,6 +264,22 @@ class HomeView: BaseView {
         playButton.snp.makeConstraints { make in
             make.top.equalTo(player).offset(23)
             make.trailing.equalTo(self).offset(-18)
+        }
+    }
+    
+    func configureCallback() {
+        
+        musicViewController.onClick = { idx in
+            self.delegate?.clickMusic(tag: idx)
+        }
+        musicViewController.updateMusicContainerHeight = {
+            self.delegate?.updateMusicContainerHeight(count: $0)
+        }
+    }
+    
+    func updateMusicContainerHeight(count: Int) {
+        musicViewController.view.snp.updateConstraints {
+            $0.height.equalTo(72 * count)
         }
     }
 }

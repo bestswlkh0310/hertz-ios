@@ -46,6 +46,7 @@ class SignInViewController: BaseViewController {
                 print(response)
                 
                 UserCache.shared.saveToken(response.data.accessToken, for: .accessToken)
+                UserCache.shared.saveToken(response.data.refreshToken, for: .refreshToken)
                 
                 let homeViewController = HomeViewController()
                 navigationController?.pushViewController(homeViewController, animated: true)
