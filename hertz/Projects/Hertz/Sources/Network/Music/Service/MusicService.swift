@@ -11,6 +11,6 @@ public class MusicService {
     }
     
     public func getMusic(id: Int) async -> NetworkResult<Data> {
-        return await HttpClient.shared.request(MusicTarget.music(id: id), res: Data.self)
+        return await HttpClient.shared.requestData(MusicTarget.music(id: id))
     }
 }

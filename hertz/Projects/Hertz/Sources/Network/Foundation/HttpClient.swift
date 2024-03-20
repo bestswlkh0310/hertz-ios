@@ -17,17 +17,37 @@ class HttpClient {
         }
     }
     
-    private func judgeStatus<M: Decodable>(by statusCode: Int, _ data: Data, type: M.Type) -> NetworkResult<M> {
-        switch statusCode {
-        case 200...299: return isValidData(data: data, type: M.self)
-        case 400, 402...499: return isValidData(data: data, type: M.self)
-        case 500: return .serverErr
-        case 401: return .failure
-        default: return .networkErr
+    func requestData<T: TargetType>(_ target: T) async -> NetworkResult<Data> {
+        do {
+            let session = Session(interceptor: AuthInterceptor.shared)
+            let response = try await target.authorization == .authorization ? request(target, session: session) : request(target)
+            let statusCode = response.statusCode
+            let data = response.data
+            if 200...299 ~= statusCode {
+                return NetworkResult.success(data)
+            }
+            let networkRequest = judgeStatus(by: statusCode, data, type: Data.self)
+            return networkRequest
+        } catch {
+            return .networkErr
         }
     }
     
-    private func isValidData<M: Decodable>(data: Data, type: M.Type) -> NetworkResult<M> {
+    private func judgeStatus<M: Decodable>(by statusCode: Int, 
+                                           _ data: Data,
+                                           type: M.Type,
+                                           isData: Bool = false) -> NetworkResult<M> {
+        switch statusCode {
+        case 200...299: networkResultByJson(data: data, type: M.self)
+        case 400, 402...499: networkResultByJson(data: data, type: M.self)
+        case 500: .serverErr
+        case 401: .failure
+        default: .networkErr
+        }
+    }
+    
+    private func networkResultByJson<M: Decodable>(data: Data, type: M.Type) -> NetworkResult<M> {
+        
         let decoder = JSONDecoder()
         do {
             let decodedData = try decoder.decode(M.self, from: data)

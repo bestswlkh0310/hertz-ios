@@ -37,17 +37,23 @@ public final class AuthInterceptor: RequestInterceptor {
             completion(.doNotRetryWithError(error))
             return
         }
-
-        // 토큰 갱신 API 호출
-//        UserCache.shared.getNewToken { result in
-//            switch result {
-//            case .success:
-//                print("Retry-토큰 재발급 성공")
-//                completion(.retry)
-//            case .failure(let error):
-//                // 갱신 실패 -> 로그인 화면으로 전환
-//                completion(.doNotRetryWithError(error))
-//            }
-//        }
+        
+        guard let refreshToken = UserCache.shared.getToken(for: .refreshToken) else {
+            completion(.doNotRetryWithError(error))
+            return
+        }
+        
+        // MARK: refresh
+        Task {
+            let result = await UserService.shared.refresh(refreshToken: refreshToken)
+            switch result {
+            case .success(let response):
+                let accessToken = response.data.accessToken
+                UserCache.shared.saveToken(accessToken, for: .accessToken)
+                completion(.retry)
+            default:
+                completion(.doNotRetryWithError(error))
+            }
+        }
     }
 }

@@ -10,21 +10,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        // disable constraint warning
         UserDefaults.standard.set(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
-
-//        if #available(iOS 1.13, *) {
-//            return true
-//        }
         
-        window = UIWindow()
-        let homeViewController = StartViewController()
-        let navigationController = UINavigationController(rootViewController: homeViewController)
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
-        
-        if let userInfo = launchOptions?[.url] as? [AnyHashable: Any] {
-            print(userInfo)
-        }
+        // configure avauthiosession
         do {
             try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
@@ -33,6 +22,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("AVAudio Setting error")
             debugPrint(error)
         }
+        
+        if #available(iOS 13.0, *) {
+            return true
+        }
+        
+        window = UIWindow()
+        let accessToken = UserCache.shared.getToken(for: .accessToken)
+        let rootViewController = accessToken == nil ? StartViewController() : HomeViewController()
+        let navigationController = UINavigationController(rootViewController: rootViewController)
+        window?.rootViewController = navigationController
+        window?.makeKeyAndVisible()
         return true
     }
     
