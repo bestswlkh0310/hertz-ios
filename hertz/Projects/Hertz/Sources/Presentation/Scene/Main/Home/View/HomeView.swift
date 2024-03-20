@@ -199,6 +199,7 @@ class HomeView: BaseView {
         
         gnbBar.snp.makeConstraints { make in
             make.leading.trailing.equalTo(stack)
+            make.top.equalTo(safeAreaLayoutGuide)
             make.height.equalTo(gnbHeight)
         }
         
