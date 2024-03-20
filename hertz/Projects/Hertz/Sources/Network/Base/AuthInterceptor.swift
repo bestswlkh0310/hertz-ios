@@ -34,11 +34,12 @@ public final class AuthInterceptor: RequestInterceptor {
             completion(.doNotRetryWithError(error))
             return
         }
-        
+        print("validating refresh...")
         if request.retryCount >= maxRetryCount {
             completion(.doNotRetry)
             return
         }
+        
         
         guard let refreshToken = UserCache.shared.getToken(for: .refreshToken) else {
             UserCache.shared.deleteTokenAll()
@@ -46,6 +47,7 @@ public final class AuthInterceptor: RequestInterceptor {
             return
         }
         
+        print("refreshing...")
         Task {
             let result = await NetworkService.shared.userService.refresh(refreshToken: refreshToken)
             switch result {

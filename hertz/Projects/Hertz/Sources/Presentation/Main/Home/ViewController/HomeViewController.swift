@@ -100,7 +100,9 @@ extension HomeViewController {
             switch response {
             case .success(let data):
                 DispatchQueue.main.async {
+                    print("try apply music")
                     self.homeView.musicViewController.musics = data.data.map { $0.toDomain() }
+                    print("fetching music - success")
                 }
             default:
                 print(response)
