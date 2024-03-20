@@ -58,5 +58,16 @@ extension UserTarget: TargetType {
         }
     }
     
+    var authorization: Authorization {
+        switch self {
+        case .signUp(_):
+                .unauthorization
+        case .signIn(_):
+                .unauthorization
+        case .refresh(_):
+                .unauthorization
+        }
+    }
+    
     
 }

@@ -6,12 +6,13 @@ class HttpClient {
 
     func request<T: TargetType, D: Decodable>(_ target: T, res: D.Type) async -> NetworkResult<D> {
         do {
-            let response = try await request(target)
+            let session = Session(interceptor: AuthInterceptor.shared)
+            let response = try await target.authorization == .authorization ? request(target, session: session) : request(target)
             let statusCode = response.statusCode
             let data = response.data
             let networkRequest = judgeStatus(by: statusCode, data, type: res)
             return networkRequest
-        } catch let error {
+        } catch {
             return .networkErr
         }
     }
@@ -54,9 +55,10 @@ class HttpClient {
         return .requestErr(decodedData)
     }
     
-    private func request<T: TargetType>(_ target: T) async throws -> Moya.Response {
+    private func request<T: TargetType>(_ target: T, 
+                                        session: Session = MoyaProvider<T>.defaultAlamofireSession()) async throws -> Moya.Response {
         return try await withCheckedThrowingContinuation { config in
-            self.request(target: target, provider: MoyaProvider<T>(), completion: config.resume(with:))
+            self.request(target: target, provider: MoyaProvider<T>(session: session), completion: config.resume(with:))
         }
     }
     

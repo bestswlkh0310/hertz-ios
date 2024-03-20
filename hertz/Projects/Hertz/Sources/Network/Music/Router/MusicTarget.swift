@@ -33,7 +33,7 @@ extension MusicTarget: TargetType {
         switch self {
         case .musics:
                 .requestPlain
-        case let .music(id):
+        case .music(_):
                 .requestPlain
         }
     }
