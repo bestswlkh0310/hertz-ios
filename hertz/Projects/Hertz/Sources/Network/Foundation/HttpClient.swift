@@ -12,7 +12,12 @@ class HttpClient {
             let data = response.data
             let networkRequest = judgeStatus(by: statusCode, data, type: res)
             return networkRequest
+        } catch let e as MoyaError {
+            guard let response = e.response else { return .networkErr }
+            let networkRequest = judgeStatus(by: response.statusCode, response.data, type: res)
+            return networkRequest
         } catch {
+            print("no..")
             return .networkErr
         }
     }
@@ -28,7 +33,12 @@ class HttpClient {
             }
             let networkRequest = judgeStatus(by: statusCode, data, type: Data.self)
             return networkRequest
+        } catch let e as MoyaError {
+            guard let response = e.response else { return .networkErr }
+            let networkRequest = judgeStatus(by: response.statusCode, response.data, type: Data.self)
+            return networkRequest
         } catch {
+            print("no..")
             return .networkErr
         }
     }
@@ -77,7 +87,7 @@ class HttpClient {
     
     private func request<T: TargetType>(_ target: T, 
                                         session: Session = MoyaProvider<T>.defaultAlamofireSession()) async throws -> Moya.Response {
-        return try await withCheckedThrowingContinuation { config in
+        try await withCheckedThrowingContinuation { config in
             self.request(target: target, provider: MoyaProvider<T>(session: session), completion: config.resume(with:))
         }
     }

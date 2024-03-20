@@ -21,4 +21,9 @@ public class UserCache {
     public func getToken(for type: JwtType) -> String? {
         UserDefaults.standard.string(forKey: type.rawValue)
     }
+    
+    public func deleteTokenAll() {
+        saveToken(nil, for: .accessToken)
+        saveToken(nil, for: .refreshToken)
+    }
 }

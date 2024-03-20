@@ -238,6 +238,7 @@ class HomeView: BaseView {
         musicViewController.view.snp.makeConstraints { make in
             make.top.equalTo(categoryContainer.snp.bottom)
             make.leading.trailing.equalTo(stack)
+            make.height.equalTo(0)
         }
         
         player.snp.makeConstraints { make in
@@ -279,7 +280,7 @@ class HomeView: BaseView {
     
     func updateMusicContainerHeight(count: Int) {
         musicViewController.view.snp.updateConstraints {
-            $0.height.equalTo(72 * count)
+            $0.height.equalTo(72 * count + 240)
         }
     }
 }

@@ -38,10 +38,13 @@ public final class AuthInterceptor: RequestInterceptor {
             return
         }
         
+        print("\(#file) - valided refresh request")
         guard let refreshToken = UserCache.shared.getToken(for: .refreshToken) else {
+            UserCache.shared.deleteTokenAll()
             completion(.doNotRetryWithError(error))
             return
         }
+        print("\(#file) - has refreshToken")
         
         // MARK: refresh
         Task {
@@ -52,8 +55,7 @@ public final class AuthInterceptor: RequestInterceptor {
                 UserCache.shared.saveToken(accessToken, for: .accessToken)
                 completion(.retry)
             default:
-                UserCache.shared.saveToken(nil, for: .accessToken)
-                UserCache.shared.saveToken(nil, for: .refreshToken)
+                UserCache.shared.deleteTokenAll()
                 completion(.doNotRetryWithError(error))
             }
         }

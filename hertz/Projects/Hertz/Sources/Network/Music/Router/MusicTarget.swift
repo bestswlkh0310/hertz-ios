@@ -41,4 +41,13 @@ extension MusicTarget: TargetType {
     var headers: [String : String]? {
         nil
     }
+    
+    var validationType: ValidationType {
+        switch self {
+        case .musics:
+                .successCodes
+        case .music(_):
+                .successCodes
+        }
+    }
 }
