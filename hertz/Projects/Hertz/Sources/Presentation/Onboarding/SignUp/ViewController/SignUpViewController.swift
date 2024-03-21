@@ -35,6 +35,11 @@ class SignUpViewController: BaseViewController {
     
     @objc
     func navigateCode() {
+        OnboardingShared.shared.do {
+            $0.username = signUpView.emailTextField.text ?? ""
+            $0.password = signUpView.passwordTextField.text ?? ""
+            $0.passwordCheck = signUpView.passwordCheckTextField.text ?? ""
+        }
         let codeViewController = CodeViewController()
         navigationController?.pushViewController(codeViewController, animated: true)
     }
