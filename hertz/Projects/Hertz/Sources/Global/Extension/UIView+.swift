@@ -8,8 +8,7 @@ extension UIView {
         }
     }
     
-    // 토스트 메세지
-    func showToast(message: String, at: CGFloat = 25) {
+    func showToast(message: String, at: CGFloat = 136) {
         let toastLabel = UILabel()
         toastLabel.backgroundColor = .black
         toastLabel.textColor = .gray300
@@ -30,10 +29,10 @@ extension UIView {
             window.addSubview(toastLabel)
         }
         
-        UIView.animate(withDuration: 3.0, delay: 0.1, options: .curveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 2, options: .curveEaseOut) {
             toastLabel.alpha = 0.0
-        }, completion: {(isCompleted) in
+        } completion: { _ in
             toastLabel.removeFromSuperview()
-        })
+        }
     }
 }
