@@ -3,6 +3,17 @@ import UIKit
 class CodeViewController: BaseViewController {
     
     let codeView = CodeView()
+    var isEmailFetching = false {
+        didSet {
+            codeView.requestButton.isEnabled = !isEmailFetching
+        }
+    }
+    
+    var isSignUpFetching = false {
+        didSet {
+            codeView.continueButton.isEnabled = !isSignUpFetching
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,11 +35,14 @@ class CodeViewController: BaseViewController {
     
     func configureAddTarget() {
         codeView.requestButton.addTarget(self, action: #selector(requestEmailCode), for: .touchUpInside)
+        codeView.continueButton.addTarget(self, action: #selector(signUp), for: .touchUpInside)
     }
     
     @objc
     func requestEmailCode() {
+        isEmailFetching = true
         Task {
+            defer { isEmailFetching = false }
             let req = EmailCodeRequest(to: OnboardingShared.shared.username)
             let result = await NetworkService.shared.userService.sendEmailCode(req: req)
             switch result {
@@ -36,6 +50,11 @@ class CodeViewController: BaseViewController {
                 print("request email code success")
                 DispatchQueue.main.async {
                     // TODO: change state
+                    self.codeView.requestButton.do {
+                        $0.backgroundColor = .clear
+                        $0.setTitle("전송 완료", for: .normal)
+                        $0.setTitleColor(.gray500, for: .normal)
+                    }
                 }
                 break
             default:
@@ -53,7 +72,9 @@ class CodeViewController: BaseViewController {
     @objc
     func signUp() {
         saveCodeForShared()
+        isSignUpFetching = true
         Task {
+            defer { isSignUpFetching = false }
             let req = OnboardingShared.shared.makeSignUpRequest()
             let result = await NetworkService.shared.userService.signUp(req: req)
             switch result {
