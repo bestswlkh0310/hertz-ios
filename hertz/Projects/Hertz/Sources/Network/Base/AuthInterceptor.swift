@@ -63,8 +63,10 @@ public final class AuthInterceptor: RequestInterceptor {
     }
     
     func logout() {
-        UserCache.shared.deleteTokenAll()
-        let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate
-        sceneDelegate.window?.rootViewController = UINavigationController(rootViewController: StartViewController())
+        DispatchQueue.main.async {
+            UserCache.shared.deleteTokenAll()
+            let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate
+            sceneDelegate.window?.rootViewController = UINavigationController(rootViewController: StartViewController())
+        }
     }
 }
