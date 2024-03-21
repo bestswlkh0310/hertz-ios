@@ -5,6 +5,7 @@ public enum UserTarget {
     case signUp(_ req: SignUpRequest)
     case signIn(_ req: SignInRequest)
     case refresh(_ refreshToken: String)
+    case sendEmailCode(_ req: EmailCodeRequest)
 }
 
 extension UserTarget: TargetType {
@@ -20,6 +21,8 @@ extension UserTarget: TargetType {
             "\(ApiPath.users)/sign-in"
         case .refresh:
             "\(ApiPath.users)/refresh"
+        case .sendEmailCode(_):
+            "\(ApiPath.users)/send-email-code"
         }
     }
     
@@ -31,6 +34,8 @@ extension UserTarget: TargetType {
                 .post
         case .refresh:
                 .post
+        case .sendEmailCode:
+                .post
         }
     }
     
@@ -41,6 +46,8 @@ extension UserTarget: TargetType {
         case let .signIn(req):
                 .requestJSONEncodable(req)
         case let .refresh(req):
+                .requestJSONEncodable(req)
+        case let .sendEmailCode(req):
                 .requestJSONEncodable(req)
         }
     }
@@ -55,6 +62,8 @@ extension UserTarget: TargetType {
             [
                 "refresh-token": refreshToken
             ]
+        case .sendEmailCode:
+            nil
         }
     }
     
@@ -65,6 +74,8 @@ extension UserTarget: TargetType {
         case .signIn(_):
                 .unauthorization
         case .refresh(_):
+                .unauthorization
+        case .sendEmailCode:
                 .unauthorization
         }
     }
