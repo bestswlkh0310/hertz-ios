@@ -23,13 +23,57 @@ class CodeViewController: BaseViewController {
     }
     
     func configureAddTarget() {
-        
+        codeView.requestButton.addTarget(self, action: #selector(requestEmailCode), for: .touchUpInside)
     }
     
     @objc
-    func navigateSignIn() {
-        let codeViewController = CodeViewController()
-        navigationController?.pushViewController(codeViewController, animated: true)
+    func requestEmailCode() {
+        Task {
+            let req = EmailCodeRequest(to: OnboardingShared.shared.username)
+            let result = await NetworkService.shared.userService.sendEmailCode(req: req)
+            switch result {
+            case .success(_):
+                print("request email code success")
+                DispatchQueue.main.async {
+                    // TODO: change state
+                }
+                break
+            default:
+                print(result)
+                codeView.showToast(message: "이메일 전송 실패")
+                break
+            }
+        }
+    }
+    
+    func saveCodeForShared() {
+        OnboardingShared.shared.code = codeView.codeTextField.text ?? ""
+    }
+    
+    @objc
+    func signUp() {
+        saveCodeForShared()
+        Task {
+            let req = OnboardingShared.shared.makeSignUpRequest()
+            let result = await NetworkService.shared.userService.signUp(req: req)
+            switch result {
+            case .success(let response):
+                
+                UserCache.shared.saveToken(response.data.accessToken, for: .accessToken)
+                UserCache.shared.saveToken(response.data.refreshToken, for: .refreshToken)
+                DispatchQueue.main.async {
+                    self.navigateHome()
+                }
+                    
+            default:
+                break
+            }
+        }
+    }
+    
+    func navigateHome() {
+        let homeViewController = HomeViewController()
+        navigationController?.pushViewController(homeViewController, animated: true)
     }
 }
 

@@ -6,6 +6,8 @@ class CodeView: BaseView {
     
     var codeTextField = HertzTextField()
     
+    var requestButton = HertzSmallButton()
+    
     var continueButton = HertzButton()
     
     override func setUpStyle() {
@@ -19,6 +21,10 @@ class CodeView: BaseView {
             $0.placeholder = "코드"
         }
         
+        requestButton.do {
+            $0.setTitle("요청", for: .normal)
+        }
+        
         continueButton.do {
             $0.setTitle("계속하기", for: .normal)
         }
@@ -28,6 +34,7 @@ class CodeView: BaseView {
         super.configureUI()
         addSubviews(stack)
         stack.addArrangedSubviews(codeTextField)
+        codeTextField.addSubviews(requestButton)
         addSubviews(continueButton)
     }
     
@@ -41,6 +48,11 @@ class CodeView: BaseView {
         
         codeTextField.snp.makeConstraints {
             $0.leading.trailing.equalTo(stack)
+        }
+        
+        requestButton.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.trailing.equalToSuperview().offset(-10)
         }
         
         continueButton.snp.makeConstraints {
