@@ -85,8 +85,9 @@ class CodeViewController: BaseViewController {
                 DispatchQueue.main.async {
                     self.navigateHome()
                 }
-                    
+                
             default:
+                codeView.showToast(message: "회원가입을 할 수 없습니다")
                 break
             }
         }

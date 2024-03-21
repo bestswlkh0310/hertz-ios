@@ -7,9 +7,10 @@ class MyAppTests: XCTestCase {
         let req = SignUpRequest(username: "test", password: "test", passwordCheck: "test", code: "")
         let response = await NetworkService.shared.userService.signUp(req: req)
         printResult(response: response)
-        if case .success(let t) = response {
+        if case .success(_) = response {
             
         } else {
+            print(response)
             XCTFail("sign up failure")
         }
     }
