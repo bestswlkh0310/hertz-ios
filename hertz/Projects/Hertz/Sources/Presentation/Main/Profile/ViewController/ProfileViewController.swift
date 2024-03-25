@@ -20,4 +20,9 @@ class ProfileViewController: BaseViewController {
         view = profileView
     }
     
+    func configureChildVC() {
+        addChild(profileView.playlistViewController)
+        profileView.playlistViewController.didMove(toParent: self)
+    }
+    
 }
