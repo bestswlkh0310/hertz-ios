@@ -42,12 +42,4 @@ extension MusicTarget: TargetType {
         nil
     }
     
-//    public var validationType: ValidationType {
-//        switch self {
-//        case .musics:
-//                .successCodes
-//        case .music(_):
-//                .successCodes
-//        }
-//    }
 }

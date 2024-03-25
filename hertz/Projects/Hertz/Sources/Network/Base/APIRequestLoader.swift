@@ -10,7 +10,7 @@ public class APIRequestLoader<T: TargetType> {
             let response = try await target.authorization == .authorization ? request(target, session: session) : request(target)
             return getResult(by: response.statusCode, response.data, type: res)
         } catch {
-            return .networkErr
+            return .authFailure
         }
     }
     
@@ -22,7 +22,7 @@ public class APIRequestLoader<T: TargetType> {
             }
             return getResult(by: response.statusCode, response.data, type: Data.self)
         } catch {
-            return .networkErr
+            return .authFailure
         }
     }
     

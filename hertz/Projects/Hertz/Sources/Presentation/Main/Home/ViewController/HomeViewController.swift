@@ -118,7 +118,7 @@ extension HomeViewController {
                     print("fetching music - success")
                 }
             default:
-                print(response)
+                print("\(#function) - \(response)")
                 break
             }
         }

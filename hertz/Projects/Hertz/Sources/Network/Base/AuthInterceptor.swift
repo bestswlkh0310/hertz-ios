@@ -29,7 +29,8 @@ public final class AuthInterceptor: RequestInterceptor {
 
     public func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
         print("retry 진입")
-        guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401
+        let url = request.request?.url?.absoluteURL.absoluteString ?? ""
+        guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401, !url.contains("refresh")
         else {
             completion(.doNotRetryWithError(error))
             return
@@ -39,7 +40,6 @@ public final class AuthInterceptor: RequestInterceptor {
             completion(.doNotRetry)
             return
         }
-        
         
         guard let refreshToken = UserCache.shared.getToken(for: .refreshToken) else {
             UserCache.shared.deleteTokenAll()
