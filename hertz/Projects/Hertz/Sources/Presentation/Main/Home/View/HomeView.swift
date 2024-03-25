@@ -41,6 +41,8 @@ class HomeView: BaseView {
     
     var playButton = UIButton()
     
+    var profileButton = UIButton()
+    
     let playerHeight: CGFloat = 90
     
     override init(frame: CGRect) {
@@ -76,6 +78,11 @@ class HomeView: BaseView {
         logo.do {
             let uiImage = UIImage(named: "Logo")
             $0.image = uiImage
+        }
+        
+        profileButton.do {
+            let uiImage = UIImage(named: "Profile")
+            $0.setImage(uiImage, for: .normal)
         }
         
         banner = .init(rootView: BannerView()).then {
@@ -167,7 +174,8 @@ class HomeView: BaseView {
                     playingAuthor,
                     playButton)
         
-        gnbBar.addSubview(logo)
+        gnbBar.addSubviews(logo,
+                           profileButton)
         
         stack.addArrangedSubviews(banner.view,
                                   titleContainer)
@@ -204,8 +212,13 @@ class HomeView: BaseView {
         }
         
         logo.snp.makeConstraints { make in
-            make.leading.equalTo(gnbBar).offset(20)
+            make.leading.equalToSuperview().offset(20)
             make.top.equalTo(safeAreaLayoutGuide)
+        }
+        
+        profileButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().offset(-20)
+            $0.top.equalTo(safeAreaLayoutGuide)
         }
         
         banner.view.snp.makeConstraints { make in

@@ -39,6 +39,7 @@ class HomeViewController: BaseViewController, UIScrollViewDelegate {
         configureChildVC()
         configureScrollView()
         configureMusicCellTapped()
+        setAddTarget()
         
         // MARK: fetch
         self.fetchAll()
@@ -55,6 +56,11 @@ class HomeViewController: BaseViewController, UIScrollViewDelegate {
         homeView.musicViewController.didMove(toParent: self)
     }
     
+    func setAddTarget() {
+        homeView.profileButton.addTarget(self, action: #selector(navigateProfileView), for: .touchUpInside)
+    }
+    
+    
     func configureScrollView() {
         homeView.scrollView.do {
             $0.addObserver(self, forKeyPath: "contentOffset", options:. new, context: nil)
@@ -67,6 +73,13 @@ class HomeViewController: BaseViewController, UIScrollViewDelegate {
             self.clickMusic(tag: $0)
         }
     }
+    
+    @objc
+    func navigateProfileView() {
+        let profileViewController = ProfileViewController()
+        self.navigationController?.pushViewController(profileViewController, animated: true)
+    }
+    
     
     func navigateDetail(music: Music) {
         let detailVC = DetailViewController()

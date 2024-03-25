@@ -10,8 +10,14 @@ import UIKit
 
 class ProfileViewController: BaseViewController {
     
+    var profileView = ProfileView()
+    
+    override var isNavigationBarHidden: Bool { true }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "프로필"
+        view = profileView
     }
     
 }
