@@ -35,13 +35,27 @@ class SignUpViewController: BaseViewController {
     
     @objc
     func navigateCode() {
-        OnboardingShared.shared.do {
-            $0.username = signUpView.emailTextField.text ?? ""
-            $0.password = signUpView.passwordTextField.text ?? ""
-            $0.passwordCheck = signUpView.passwordCheckTextField.text ?? ""
+        let email = signUpView.emailTextField.text ?? ""
+        let password = signUpView.passwordTextField.text ?? ""
+        let passwordCheck = signUpView.passwordCheckTextField.text ?? ""
+        
+        if email.isEmpty {
+            showAlert(title: "이메일을 입력해 주세요")
+        } else if password.isEmpty {
+            showAlert(title: "비밀번호를 입력해 주세요")
+        } else if passwordCheck.isEmpty {
+            showAlert(title: "비밀번호를 재입력해 주세요")
+        } else if password != passwordCheck {
+            showAlert(title: "비밀번호가 일치하지 않습니다.")
+        } else {
+            OnboardingShared.shared.do {
+                $0.username = email
+                $0.password = password
+                $0.passwordCheck = passwordCheck
+            }
+            let codeViewController = CodeViewController()
+            navigationController?.pushViewController(codeViewController, animated: true)
         }
-        let codeViewController = CodeViewController()
-        navigationController?.pushViewController(codeViewController, animated: true)
     }
 }
 

@@ -15,7 +15,7 @@ class HomeView: BaseView {
     
     var logo = UIImageView()
     
-    var banner = UIHostingController<BannerView>(rootView: BannerView())
+    var banner = UIHostingController(rootView: BannerView())
     
     var titleContainer = UIView()
     

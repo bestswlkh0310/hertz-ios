@@ -37,22 +37,34 @@ class SignInViewController: BaseViewController {
     func signIn() {
         guard let email = signInView.emailTextField.text else { return }
         guard let password = signInView.passwordTextField.text else { return }
-        let request = SignInRequest(username: email, password: password)
-        Task {
-            let result = await NetworkService.shared.userService.signIn(req: request)
-            switch result {
-            case .success(let response):
-                // TODO: handle token
-                print(response)
-                
-                UserCache.shared.saveToken(response.data.accessToken, for: .accessToken)
-                UserCache.shared.saveToken(response.data.refreshToken, for: .refreshToken)
-                
-                let homeViewController = HomeViewController()
-                navigationController?.pushViewController(homeViewController, animated: true)
-            default:
-                print(result)
-                break
+        
+        if email.isEmpty {
+            showAlert(title: "이메일을 입력해 주세요")
+        } else if password.isEmpty {
+            showAlert(title: "비밀번호를 입력해 주세요")
+        } else {
+            let request = SignInRequest(username: email, password: password)
+            Task {
+                let result = await NetworkService.shared.userService.signIn(req: request)
+                switch result {
+                case .success(let response):
+                    // TODO: handle token
+                    print(response)
+                    
+                    UserCache.shared.saveToken(response.data.accessToken, for: .accessToken)
+                    UserCache.shared.saveToken(response.data.refreshToken, for: .refreshToken)
+                    
+                    let homeViewController = HomeViewController()
+                    navigationController?.pushViewController(homeViewController, animated: true)
+                case .requestErr(let res):
+                    print(result)
+                    break
+                case .networkErr:
+                    showAlert(title: "네트워크 에러가 발생했습니다.")
+                default:
+                    showAlert(title: "알 수 없는 에러가 발생했습니다.")
+                    break
+                }
             }
         }
     }
