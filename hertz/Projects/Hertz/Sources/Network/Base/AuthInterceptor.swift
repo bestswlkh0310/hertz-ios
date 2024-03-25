@@ -13,6 +13,8 @@ import UIKit
 public final class AuthInterceptor: RequestInterceptor {
 
     private let maxRetryCount: Int = 3
+    
+    public init() {}
 
     public func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         guard let accessToken = UserCache.shared.getToken(for: .accessToken)
@@ -41,11 +43,7 @@ public final class AuthInterceptor: RequestInterceptor {
             return
         }
         
-        guard let refreshToken = UserCache.shared.getToken(for: .refreshToken) else {
-            UserCache.shared.deleteTokenAll()
-            completion(.doNotRetry)
-            return
-        }
+        let refreshToken = UserCache.shared.getToken(for: .refreshToken) ?? ""
         
         print("refreshing...")
         Task {

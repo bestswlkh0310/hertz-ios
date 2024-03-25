@@ -8,9 +8,15 @@ public class APIRequestLoader<T: TargetType> {
     public func request<D: Decodable>(_ target: T, res: D.Type) async -> NetworkResult<D> {
         do {
             let response = try await target.authorization == .authorization ? request(target, session: session) : request(target)
+            print("\(#function) - success")
             return getResult(by: response.statusCode, response.data, type: res)
+        } catch let error as MoyaError {
+            guard let response = error.response else { return .networkErr }
+            print("\(#function) - moya error")
+            return decodeError(data: response.data, type: res)
         } catch {
-            return .authFailure
+            print("\(#function) - error")
+            return .networkErr
         }
     }
     
@@ -20,9 +26,15 @@ public class APIRequestLoader<T: TargetType> {
             if 200...299 ~= response.statusCode {
                 return NetworkResult.success(response.data)
             }
+            print("\(#function) - success")
             return getResult(by: response.statusCode, response.data, type: Data.self)
+        } catch let error as MoyaError {
+            guard let response = error.response else { return .networkErr }
+            print("\(#function) - moya error")
+            return decodeError(data: response.data, type: Data.self)
         } catch {
-            return .authFailure
+            print("\(#function) - error")
+            return .networkErr
         }
     }
     
@@ -58,15 +70,11 @@ public class APIRequestLoader<T: TargetType> {
             print("error: ", error)
             print(error.localizedDescription)
         }
-        guard let decodedData = try? decoder.decode(ErrorResponse.self, from: data) else {
-            print("json decoded failed !")
-            return .decodingError
-        }
         
-        return .requestErr(decodedData)
+        return .decodingError
     }
     
-    private func decodeError(data: Data) -> NetworkResult<ErrorResponse> {
+    private func decodeError<T: Decodable>(data: Data, type: T.Type) -> NetworkResult<T> {
         guard let decodedData = try? decoder.decode(ErrorResponse.self, from: data) else {
             return .decodingError
         }

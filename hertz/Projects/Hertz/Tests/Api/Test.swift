@@ -1,7 +1,7 @@
 import XCTest
 @testable import Hertz
 
-class MyAppTests: XCTestCase {
+class Test: XCTestCase {
     
     func testSignUp() async {
         let req = SignUpRequest(username: "test", password: "test", passwordCheck: "test", code: "")
