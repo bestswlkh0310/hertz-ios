@@ -1,8 +1,8 @@
 public enum NetworkResult<T> {
-    case success(T)     // 서버 통신 성공
-    case requestErr(ErrorResponse)  // 요청에러 발생
-    case decodingError // 경로 에러
-    case serverErr  // 서버 내부 에러
-    case networkErr // 네트워크 연결 실패
-    case authFailure // 실패
+    case success(T)     // 200...299
+    case error(ErrorResponse) // // 400...499
+    case decodingError // 디코딩 에러
+    case serverError  // 500
+    case networkError // 네트워크 연결 실패
+    case authFailure // 401
 }

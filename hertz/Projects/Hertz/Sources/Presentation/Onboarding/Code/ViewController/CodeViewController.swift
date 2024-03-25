@@ -87,10 +87,10 @@ class CodeViewController: BaseViewController {
                     DispatchQueue.main.async {
                         self.navigateHome()
                     }
-                case .requestErr:
+                case .error:
                     showAlert(title: "코드가 일치하지 않습니다.")
                     break
-                case .networkErr:
+                case .networkError:
                     showAlert(title: "네트워크 에러가 발생했습니다.")
                 default:
                     showAlert(title: "알 수 없는 에러가 발생했습니다.")

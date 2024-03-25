@@ -43,7 +43,7 @@ class Test: XCTestCase {
         switch response {
         case .success(let r):
             print(r)
-        case .requestErr(let e):
+        case .error(let e):
             print(e)
         default:
             print(response)

@@ -56,10 +56,10 @@ class SignInViewController: BaseViewController {
                     
                     let homeViewController = HomeViewController()
                     navigationController?.pushViewController(homeViewController, animated: true)
-                case .requestErr:
+                case .error:
                     showAlert(title: "로그인할 수 없습니다")
                     break
-                case .networkErr:
+                case .networkError:
                     showAlert(title: "네트워크 에러가 발생했습니다.")
                 default:
                     showAlert(title: "알 수 없는 에러가 발생했습니다.")

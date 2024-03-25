@@ -11,12 +11,12 @@ public class APIRequestLoader<T: TargetType> {
             print("\(#function) - success")
             return getResult(by: response.statusCode, response.data, type: res)
         } catch let error as MoyaError {
-            guard let response = error.response else { return .networkErr }
+            guard let response = error.response else { return .networkError }
             print("\(#function) - moya error")
             return decodeError(data: response.data, type: res)
         } catch {
             print("\(#function) - error")
-            return .networkErr
+            return .networkError
         }
     }
     
@@ -29,12 +29,12 @@ public class APIRequestLoader<T: TargetType> {
             print("\(#function) - success")
             return getResult(by: response.statusCode, response.data, type: Data.self)
         } catch let error as MoyaError {
-            guard let response = error.response else { return .networkErr }
+            guard let response = error.response else { return .networkError }
             print("\(#function) - moya error")
             return decodeError(data: response.data, type: Data.self)
         } catch {
             print("\(#function) - error")
-            return .networkErr
+            return .networkError
         }
     }
     
@@ -44,9 +44,9 @@ public class APIRequestLoader<T: TargetType> {
         switch statusCode {
         case 200...299: decodeData(data: data, type: M.self)
         case 400, 402...499: decodeData(data: data, type: M.self)
-        case 500: .serverErr
+        case 500: .serverError
         case 401: .authFailure
-        default: .networkErr
+        default: .networkError
         }
     }
     
@@ -78,7 +78,7 @@ public class APIRequestLoader<T: TargetType> {
         guard let decodedData = try? decoder.decode(ErrorResponse.self, from: data) else {
             return .decodingError
         }
-        return .requestErr(decodedData)
+        return .error(decodedData)
     }
     
     private func request(_ target: T,
