@@ -55,8 +55,11 @@ public final class AuthInterceptor: RequestInterceptor {
                 let accessToken = response.data.accessToken
                 UserCache.shared.saveToken(accessToken, for: .accessToken)
                 completion(.retry)
-            default:
+            case .authFailure:
                 logout()
+                completion(.doNotRetry)
+                break
+            default:
                 completion(.doNotRetry)
             }
         }

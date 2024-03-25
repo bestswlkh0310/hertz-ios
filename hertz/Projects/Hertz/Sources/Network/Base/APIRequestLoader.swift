@@ -8,7 +8,6 @@ public class APIRequestLoader<T: TargetType> {
     public func request<D: Decodable>(_ target: T, res: D.Type) async -> NetworkResult<D> {
         do {
             let response = try await target.authorization == .authorization ? request(target, session: session) : request(target)
-            
             return getResult(by: response.statusCode, response.data, type: res)
         } catch {
             return .networkErr
@@ -34,7 +33,7 @@ public class APIRequestLoader<T: TargetType> {
         case 200...299: decodeData(data: data, type: M.self)
         case 400, 402...499: decodeData(data: data, type: M.self)
         case 500: .serverErr
-        case 401: .failure
+        case 401: .authFailure
         default: .networkErr
         }
     }
@@ -59,10 +58,9 @@ public class APIRequestLoader<T: TargetType> {
             print("error: ", error)
             print(error.localizedDescription)
         }
-//        return .networkErr
         guard let decodedData = try? decoder.decode(ErrorResponse.self, from: data) else {
             print("json decoded failed !")
-            return .networkErr
+            return .decodingError
         }
         
         return .requestErr(decodedData)
@@ -70,7 +68,7 @@ public class APIRequestLoader<T: TargetType> {
     
     private func decodeError(data: Data) -> NetworkResult<ErrorResponse> {
         guard let decodedData = try? decoder.decode(ErrorResponse.self, from: data) else {
-            return .networkErr
+            return .decodingError
         }
         return .requestErr(decodedData)
     }
