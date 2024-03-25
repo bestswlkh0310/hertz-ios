@@ -23,10 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             debugPrint(error)
         }
         
-//        if #available(iOS 13.0, *) {
-//            return true
-//        }
-        
         window = UIWindow()
         let accessToken = UserCache.shared.getToken(for: .accessToken)
         let rootViewController = accessToken == nil ? StartViewController() : HomeViewController()
