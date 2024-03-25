@@ -53,7 +53,6 @@ class HomeView: BaseView {
     
     override func setUpStyle() {
         super.setUpStyle()
-        self.backgroundColor = .gray800
         scrollView.do {
             $0.backgroundColor = .clear
             $0.showsVerticalScrollIndicator = false
