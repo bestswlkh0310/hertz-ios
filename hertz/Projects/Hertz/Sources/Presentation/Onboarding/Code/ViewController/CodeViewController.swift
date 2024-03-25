@@ -72,23 +72,30 @@ class CodeViewController: BaseViewController {
     @objc
     func signUp() {
         saveCodeForShared()
-        isSignUpFetching = true
-        Task {
-            defer { isSignUpFetching = false }
-            let req = OnboardingShared.shared.makeSignUpRequest()
-            let result = await NetworkService.shared.userService.signUp(req: req)
-            switch result {
-            case .success(let response):
-                
-                UserCache.shared.saveToken(response.data.accessToken, for: .accessToken)
-                UserCache.shared.saveToken(response.data.refreshToken, for: .refreshToken)
-                DispatchQueue.main.async {
-                    self.navigateHome()
+        if OnboardingShared.shared.code.count != 6 {
+            showAlert(title: "코드를 6글자로 입력해 주세요")
+        } else {
+            isSignUpFetching = true
+            Task {
+                defer { isSignUpFetching = false }
+                let req = OnboardingShared.shared.makeSignUpRequest()
+                let result = await NetworkService.shared.userService.signUp(req: req)
+                switch result {
+                case .success(let response):
+                    UserCache.shared.saveToken(response.data.accessToken, for: .accessToken)
+                    UserCache.shared.saveToken(response.data.refreshToken, for: .refreshToken)
+                    DispatchQueue.main.async {
+                        self.navigateHome()
+                    }
+                case .requestErr:
+                    showAlert(title: "코드가 일치하지 않습니다.")
+                    break
+                case .networkErr:
+                    showAlert(title: "네트워크 에러가 발생했습니다.")
+                default:
+                    showAlert(title: "알 수 없는 에러가 발생했습니다.")
+                    break
                 }
-                
-            default:
-                codeView.showToast(message: "회원가입을 할 수 없습니다")
-                break
             }
         }
     }
