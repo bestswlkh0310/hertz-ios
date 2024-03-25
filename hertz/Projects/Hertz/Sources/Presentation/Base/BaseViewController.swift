@@ -49,6 +49,13 @@ class BaseViewController: UIViewController {
         }
     }
     
+    func showAlert(title: String) {
+        let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        let yes = UIAlertAction(title: "닫기", style: .default, handler: nil)
+        alert.addAction(yes)
+        present(alert, animated: true)
+    }
+    
     @objc
     func backButtonTapped() {
         
